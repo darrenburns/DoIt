@@ -1,12 +1,51 @@
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-8">
-            <h1>Welcome to Todolist!</h1>
-            <p class="lead">This is your homepage, ready for editing</p>
 
-            <p>
-             <span translate="main.like">If you like this Angular-Flask generator, please give us a star at </span>&nbsp;<a href="https://github.com/rayokota/generator-angular-flask" target="_blank" translate="main.github">Github</a>!
-            </p>
+        <div class="col-md-4">
+
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="inputTag">Tag</label>
+
+                    <div class="col-sm-9">
+                        <tags-input ng-model="newTodoTags" type="text" id="inputTag">
+                        </tags-input>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-3" for="inputText">Todo</label>
+
+                    <div class="col-sm-9">
+                        <input ng-model="newTodoText" type="text" class="form-control" id="inputText">
+                    </div>
+                </div>
+
+                <button class="btn btn-default pull-right" ng-click="addTodo()">Add</button>
+            </form>
+
+            <h4>
+                All tags
+            </h4>
+
+            <div class="tags-list">
+                <li ng-repeat="tag in allTags track by $index" class="tag-item">{{ tag.text }}</li>
+            </div>
+
         </div>
+
+        <div class="col-md-8">
+            <ul class="list-group">
+                <li ng-repeat="item in todos" class="list-group-item todo-body">
+                    {{ item.text }}
+                    <div class="tags-list">
+                        <span ng-repeat="tag in item.tags" class="tag-item">{{ tag.text }}</span>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+
     </div>
+
+
 </div>

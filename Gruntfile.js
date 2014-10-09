@@ -33,6 +33,13 @@ module.exports = function (grunt) {
           '<%= yeoman.app %>/views/**/*'
         ],
         //tasks: ['sync:dist']
+      },
+      styles: {
+        files: ['less/**/*.less'], // which files to watch
+        tasks: ['less'],
+        options: {
+          nospawn: true
+        }
       }
     },
     connect: {
@@ -102,7 +109,20 @@ module.exports = function (grunt) {
           'test/lib/angular-scenario': 'angular-scenario'
         }
       }
-    }
+    },
+    less: {
+      development: {
+        options: {
+          compress: true,
+          yuicompress: true,
+          optimization: 2
+        },
+        files: {
+          // target.css file: source.less file
+          "app/static/lib/bootstrap/dist/css/bootstrap.css": "app/static/lib/bootstrap/less/bootstrap.less"
+        }
+      }
+    },
   });
 
   grunt.registerTask('server', function (target) {
@@ -113,4 +133,6 @@ module.exports = function (grunt) {
       'watch'
     ]);
   });
+
+  grunt.loadNpmTasks('grunt-contrib-less');
 };

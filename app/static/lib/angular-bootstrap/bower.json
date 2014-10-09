@@ -7,5 +7,5 @@
     "main": ["./ui-bootstrap-tpls.js"],
     "dependencies": {
         "angular": ">=1"
-    }    
+    }
 }

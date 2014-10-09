@@ -1,5 +1,18 @@
 body {
-  margin-top: 60px;
-  padding: 10px;
-  background-color: #ECF0F1;
+    margin-top: 60px;
+    padding: 10px;
+    background-color: #ECF0F1;
+}
+
+
+
+.tags-list .tag-item {
+    color: white;
+    font-size: 0.85em;
+    background: #428bca;
+    border: 1px solid #357ebd;
+    padding: 2px;
+    margin: 1px;
+    border-radius: 1px;
+    display: inline-block;
 }
