@@ -1,4 +1,3 @@
-<div class="container-fluid">
     <div class="row">
 
         <div class="col-md-4">
@@ -25,19 +24,21 @@
             <!-- FILTER panel -->
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h4>Filter</h4>
+                    <b>Filter</b>
+                    {{ todos }}
                 </div>
                 <div class="panel-body">
-                    {{ allTags }}
-
                     <div class="row">
                         <div class="col-xs-12">
-                            <button type="button" class="btn btn-default" ng-click="selectAllTags()">
-                                Select All
-                            </button>
-                            <button type="button" class="btn btn-default" ng-click="deselectAllTags()">
-                                Deselect All
-                            </button>
+                            <b>Tags</b>
+                            <small>
+                                <a href="#" ng-click="selectAllTags()">
+                                    Show All
+                                </a>
+                                <a href="#" ng-click="deselectAllTags()">
+                                    Hide All
+                                </a>
+                            </small>
                         </div>
                     </div>
                     <div class="row">
@@ -85,6 +86,3 @@
 
 
     </div>
-
-
-</div>

@@ -7,12 +7,9 @@ angular.module('todolist')
             $scope.newTodoTags = [];
 
             $scope.addTodo = function() {
-                console.log('adding');
                 TodoListService.addTodo($scope.newTodoText, $scope.newTodoTags);
-
                 $scope.newTodoText = '';
                 $scope.newTodoTags = [];
-
             };
 
             $scope.todos = TodoListService.getTodos();

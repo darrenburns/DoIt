@@ -21,11 +21,11 @@ module.factory('TodoListService', ['TodoItem', 'TagService', function(TodoItem, 
             if (text.length > 1) {
                 todos.push(item);
 
+
                 // Add all of the tags from the new item
                 if (TagService.getAllTags().length == 0) {
-                    TagService.addAllTags(item.tags);
-                    console.log(this.getTagsAsStrings(item));
-                    TagService.selectAllTags(this.getTagsAsStrings(item));
+                    TagService.addAllTags(item);
+                    TagService.selectAllTags();
                 } else {  // Prevent duplicate tags
                     for (var i = 0; i < tags.length; i++) {
                         var newTag = tags[i];
@@ -38,8 +38,8 @@ module.factory('TodoListService', ['TodoItem', 'TagService', function(TodoItem, 
                         }
 
                         if (!found) {
+                            TagService.selectTag(newTag);
                             TagService.addTag(newTag);
-                            TagService.selectTag(newTag.text);
                         }
                     }
                 }

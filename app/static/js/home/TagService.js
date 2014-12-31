@@ -25,9 +25,9 @@ module.factory('TagService', function() {
             allTags.push(tag);
         },
 
-        addAllTags: function(tagList) {
-            for (var tagIdx = 0; tagIdx < tagList.length; tagIdx++) {
-                var tag = tagList[tagIdx];
+        addAllTags: function(item) {
+            for (var tagIdx = 0; tagIdx < item.tags.length; tagIdx++) {
+                var tag = item.tags[tagIdx];
                 allTags.push(tag);
             }
         },
