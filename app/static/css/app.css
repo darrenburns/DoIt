@@ -4,7 +4,9 @@ body {
     background-color: #ECF0F1;
 }
 
-
+.done-true {
+    text-decoration: line-through;
+}
 
 .tags-list .tag-item {
     color: white;
