@@ -24,7 +24,7 @@ module.factory('TodoListService', ['TodoItem', 'TagService', function(TodoItem, 
 
                 // Add all of the tags from the new item
                 if (TagService.getAllTags().length == 0) {
-                    TagService.addAllTags(item);
+                    TagService.addAllTags(item)
                     TagService.selectAllTags();
                 } else {  // Prevent duplicate tags
                     for (var i = 0; i < tags.length; i++) {
