@@ -12,6 +12,7 @@ class Todo(db.Model):
     tags = db.relationship('Tag',
                            secondary=todo_tags_assoc,
                            backref=db.backref('todos', lazy='dynamic'))
-    due = db.Column(db.Date, unique=False)
+    due = db.Column(db.DateTime, unique=False)
+    created = db.Column(db.DateTime, unique=False, default=db.func.now())
     done = db.Column(db.Boolean, unique=False, default=False)
     archived = db.Column(db.Boolean, unique=False, default=False)

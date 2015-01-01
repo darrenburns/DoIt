@@ -64,13 +64,29 @@
         <div class="col-md-8">
             <!-- List of TODOs -->
             <ul class="list-group">
-                <li ng-repeat="todo in todos | showSelectedOnly:selectedTags"
+                <li class="list-group-item todo-body" ng-if="todo.text.length > 0">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <span class="done-{{todo.done}} lead">{{todo.text}}</span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="tags-list">
+                                <!-- Tags within a single to-do -->
+                                <span ng-repeat="tag in todo.tags" class="tag-item">{{ tag.text }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                <li ng-repeat="todo in todos track by $index | orderBy:'!created' | showSelectedOnly:selectedTags"
                     ng-class="{disabled: todo.done}"
                     class="list-group-item todo-body">
                     <div class="row">
                         <div class="col-xs-12">
                             <input type="checkbox" ng-model="todo.done"/>
-                            <span class="done-{{todo.done}} lead">{{todo.text}} -- Done:{{ todo.done }}, Archived: {{ todo.archived }}</span>
+                            <span class="done-{{todo.done}} lead">{{todo.text}}</span><br/>
+                            <small>{{ todo.created }}</small>
                         </div>
                     </div>
                     <div class="row">

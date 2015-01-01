@@ -13,14 +13,15 @@ angular.module('todolist')
             $scope.todos = [];
             var filters = [{"name": "archived", "op": "==", "val": false},
                 {"name": "done", "op": "==", "val": false}];
-            Api.Todo.query({"q": JSON.stringify({"filters": filters})}, function(response) {
+            var orderBy = [{"field": "created", "direction": "desc"}];
+            Api.Todo.query({"q": JSON.stringify({"filters": filters, "order_by": orderBy})}, function(response) {
                 $scope.todos = response.objects;
             });
 
             $scope.todo = new Api.Todo();  // The base to-do, ready for editing
 
             $scope.addTodo = function() {
-                $scope.todos.push($scope.todo);  // Update the scope to prevent having to re-query
+                $scope.todos.unshift($scope.todo);  // Update the scope to prevent having to re-query
                 // TODO: Sometimes tags don't appear straight away (when multiple are added at once?)
                 if ($scope.allTags.length > 0) {
                     // Replace the attempted newly created tag with the already existing tag
@@ -32,7 +33,6 @@ angular.module('todolist')
                                 $scope.todo.tags[newTagIdx] = oldTag;
                             }
                         }
-
                     }
 
                 }
@@ -41,7 +41,7 @@ angular.module('todolist')
                     $scope.todo = new Api.Todo();  // Reset the to-do
                 }, function() {
                     console.log('error');
-                })
+                });
             };
 
             // Loads tags for the tag input field
@@ -63,7 +63,7 @@ angular.module('todolist')
                         todo.archived = true;
                         Api.Todo.update(todo);
                         //TODO: instantly remove this from the list of todos here instead of requeyrying? LOW PRIORITY
-                        Api.Todo.query({"q": JSON.stringify({"filters": filters})}, function(response) {
+                        Api.Todo.query({"q": JSON.stringify({"filters": filters, "order_by": orderBy})}, function(response) {
                             $scope.todos = response.objects;
                             // TODO: Stuff to handle todos marked as done properly
                         });
