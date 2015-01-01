@@ -1,8 +1,8 @@
 angular.module('todolist')
     .controller('HomeController',
     ['$scope', 'TodoItem',
-        'TodoListService', 'TagService', 'Api', '$q', '$resource',
-        function ($scope, TodoItem, TodoListService, TagService, Api, $q, $resource) {
+        'TodoListService', 'TagService', 'Api', '$q',
+        function ($scope, TodoItem, TodoListService, TagService, Api, $q) {
 
             $scope.allTags = [];
             Api.Tag.query(function(response) {
@@ -11,12 +11,10 @@ angular.module('todolist')
             });
 
             $scope.todos = [];
-            // TODO: fix query so that it only returns todos which are not both archived and done
             var filters = [{"name": "archived", "op": "==", "val": false},
                 {"name": "done", "op": "==", "val": false}];
             Api.Todo.query({"q": JSON.stringify({"filters": filters})}, function(response) {
                 $scope.todos = response.objects;
-                // TODO: Stuff to handle todos marked as done
             });
 
             $scope.todo = new Api.Todo();  // The base to-do, ready for editing
@@ -46,6 +44,7 @@ angular.module('todolist')
                 })
             };
 
+            // Loads tags for the tag input field
             $scope.loadTags = function(query) {
                 var deferred = $q.defer();
                 var returnedTags = $scope.allTags;
@@ -66,17 +65,11 @@ angular.module('todolist')
                         //TODO: instantly remove this from the list of todos here instead of requeyrying? LOW PRIORITY
                         Api.Todo.query({"q": JSON.stringify({"filters": filters})}, function(response) {
                             $scope.todos = response.objects;
-                            // TODO: Stuff to handle todos marked as done
+                            // TODO: Stuff to handle todos marked as done properly
                         });
                     }
                 });
             };
-
-
-
-
-
-
 
 
             $scope.selectedTags = TagService.getAllSelectedTags();
