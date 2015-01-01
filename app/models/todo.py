@@ -13,4 +13,5 @@ class Todo(db.Model):
                            secondary=todo_tags_assoc,
                            backref=db.backref('todos', lazy='dynamic'))
     due = db.Column(db.Date, unique=False)
-    done = db.Column(db.Boolean, unique=False)
+    done = db.Column(db.Boolean, unique=False, default=False)
+    archived = db.Column(db.Boolean, unique=False, default=False)

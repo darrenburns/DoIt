@@ -1,6 +1,7 @@
 angular.module('todolist')
     .controller('HomeController',
-    ['$scope', 'TodoItem', 'TodoListService', 'TagService',
+    ['$scope', 'TodoItem',
+        'TodoListService', 'TagService',
         function ($scope, TodoItem, TodoListService, TagService) {
 
             $scope.newTodoText = '';

@@ -17,5 +17,6 @@ module.filter('showSelectedOnly', function() {
         }
 
         return filteredItems;
+
     }
 });

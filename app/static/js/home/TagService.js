@@ -1,9 +1,9 @@
 module = angular.module('todolist');
 
-module.factory('TagService', function() {
+module.factory('TagService', ['Api', function(Api) {
 
     // State here
-    var allTags = [];
+    var allTags = Api.Tag.get();
 
     return {
 
@@ -59,4 +59,4 @@ module.factory('TagService', function() {
 
     }
 
-});
+}]);
