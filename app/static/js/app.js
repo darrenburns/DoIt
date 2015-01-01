@@ -1,5 +1,5 @@
 // Declare app level module which depends on filters, and services
-angular.module('todolist', ['ngResource', 'ngRoute', 'ui.bootstrap', 'ngTagsInput'])
+angular.module('todolist', ['ngResource', 'ngRoute', 'ui.bootstrap', 'ngTagsInput', 'timer'])
     .config(['$routeProvider', function ($routeProvider) {
         $routeProvider
             .when('/', {

@@ -2,6 +2,13 @@ body {
     background-color: #ECF0F1;
 }
 
+#doit-topbar {
+}
+
+.doit-controls-top {
+    margin-top: 22px;
+}
+
 .done-true {
     text-decoration: line-through;
 }

@@ -1,115 +1,137 @@
-    <h1 id="doit-header" class="page-header">Doit <small>Quick and simple personal task management</small></h1>
-    <div class="row">
+<div id="doit-topbar" class="row">
+    <div class="col-xs-3">
+        <h1 id="doit-header">Doit</h1>
+    </div>
+    <div class="col-xs-6">
+        <div class="doit-controls-top">
+            <input type="text" class="form-control" placeholder="Search"/>
+        </div>
+    </div>
+    <div class="col-xs-3">
+        <div class="doit-controls-top pull-right">
+            <button ng-click="archiveTodos()" type="button" class="btn btn-default" tooltip-placement="left" tooltip="Archive Complete">
+                <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+            </button>
+        </div>
+    </div>
+</div>
 
-        <div class="col-md-4">
 
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <form class="form-horizontal" role="form">
-                        <div class="form-group">
-                            <div class="col-xs-12">
-                                <tags-input ng-model="todo.tags" type="text" id="inputTag" placeholder="Label your todo">
-                                    <auto-complete source="loadTags($query)"></auto-complete>
-                                </tags-input>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-xs-12">
-                                <input ng-model="todo.text" type="text" class="form-control" id="inputText" placeholder="What do you need to do?">
-                            </div>
-                        </div>
-                        <button class="btn btn-default pull-right hidden" ng-click="addTodo()">Add</button>
-                    </form>
-                </div>
-            </div>
+<div class="row">
 
-            <!-- FILTER panel -->
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <b>Filter</b>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
+    <div class="col-md-4">
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form class="form-horizontal" role="form">
+                    <div class="form-group">
                         <div class="col-xs-12">
-                            <b>Tags</b>
-                            <small>
-                                <a href="#" ng-click="selectAllTags()">
-                                    Show All
-                                </a>
-                                <a href="#" ng-click="deselectAllTags()">
-                                    Hide All
-                                </a>
-                            </small>
+                            <tags-input ng-model="todo.tags" type="text" id="inputTag" placeholder="Label your todo">
+                                <auto-complete source="loadTags($query)"></auto-complete>
+                            </tags-input>
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="form-group">
                         <div class="col-xs-12">
-                            <div class="tags-list">
-                                <ul>
-                                    <li ng-repeat="tag in allTags track by $index"
-                                        class="tag-item" ng-click="toggleSelectTag(tag)"
-                                        ng-style="{ 'background-color': tag.selected ? '' : '#88A8BB' }">
-                                        {{ tag.text }}
-                                    </li>
-                                </ul>
-                            </div>
+                            <input ng-model="todo.text" type="text" class="form-control" id="inputText" placeholder="What do you need to do?">
                         </div>
                     </div>
-                </div>
+                    <button class="btn btn-default pull-right hidden" ng-click="addTodo()">Add</button>
+                </form>
             </div>
-            <!-- End FILTER panel -->
-
         </div>
 
-        <div class="col-md-8">
-            <!-- List of TODOs -->
-            <ul class="list-group">
-                <li class="list-group-item todo-body" ng-if="todo.text.length > 0">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <span class="done-{{todo.done}} lead">{{todo.text}}</span>
+        <!-- FILTER panel -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <b>Filter</b>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <b>Tags</b>
+                        <small>
+                            <a href="#" ng-click="selectAllTags()">
+                                Show All
+                            </a>
+                            <a href="#" ng-click="deselectAllTags()">
+                                Hide All
+                            </a>
+                        </small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="tags-list">
+                            <ul>
+                                <li ng-repeat="tag in allTags track by $index"
+                                    class="tag-item" ng-click="toggleSelectTag(tag)"
+                                    ng-style="{ 'background-color': tag.selected ? '' : '#88A8BB' }">
+                                    {{ tag.text }}
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xs-8">
-                            <div class="tags-list">
-                                <!-- Tags within a single to-do -->
-                                <span ng-repeat="tag in todo.tags" class="tag-item">{{ tag.text }}</span>
-                            </div>
-                        </div>
-                        <div class="col-xs-4">
-                            <small class="pull-right text-muted">NOW</small>
-                        </div>
-                    </div>
-                </li>
-                <!-- TODO: Should be a directive -->
-                <li ng-repeat="todo in todos track by $index | orderBy:'!created' | showSelectedOnly:selectedTags"
-                    ng-class="{disabled: todo.done}"
-                    class="list-group-item todo-body">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <input type="checkbox" ng-model="todo.done"/>
-                            <span class="done-{{todo.done}} lead">{{todo.text}}</span><br/>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-xs-8">
-                            <div class="tags-list">
-                                <!-- Tags within a single to-do -->
-                                <span ng-repeat="tag in todo.tags" class="tag-item">{{ tag.text }}</span>
-                            </div>
-                        </div>
-                        <div class="col-xs-4">
-                            <small class="pull-right text-muted">{{ todo.created | date:'short' }}</small>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-            <!-- End of TODOs list -->
-            <a ng-click="archiveTodos()">
-                Archive Complete
-            </a>
+                </div>
+            </div>
         </div>
-
+        <!-- End FILTER panel -->
 
     </div>
+
+    <div class="col-md-8">
+        <!-- List of TODOs -->
+        <ul class="list-group">
+            <li class="list-group-item todo-body" ng-if="todo.text.length > 0">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <span class="done-{{todo.done}} lead">{{todo.text}}</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8">
+                        <div class="tags-list">
+                            <!-- Tags within a single to-do -->
+                            <span ng-repeat="tag in todo.tags" class="tag-item">{{ tag.text }}</span>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <small class="pull-right text-muted">NOW</small>
+                    </div>
+                </div>
+            </li>
+            <!-- TODO: Should be a directive -->
+            <li ng-repeat="todo in todos track by $index | orderBy:'!created' | showSelectedOnly:selectedTags"
+                ng-class="{disabled: todo.done}"
+                class="list-group-item todo-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <timer interval="1000">
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ (seconds/60) * 100 }}%">
+                                </div>
+                            </div>
+                        </timer>
+                        <input type="checkbox" ng-model="todo.done"/>
+                        <span class="done-{{todo.done}} lead">{{todo.text}}</span><br/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8">
+                        <div class="tags-list">
+                            <!-- Tags within a single to-do -->
+                            <span ng-repeat="tag in todo.tags" class="tag-item">{{ tag.text }}</span>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <small class="pull-right text-muted">{{ todo.created | date:'short' }}</small>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <!-- End of TODOs list -->
+
+    </div>
+
+
+</div>
