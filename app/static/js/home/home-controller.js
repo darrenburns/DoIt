@@ -12,8 +12,9 @@ angular.module('todolist')
 
             $scope.todos = [];
             // TODO: fix query so that it only returns todos which are not both archived and done
-            //var filters = [{"name": "text", "op": "contains", "val": "%y%"}];
-            Api.Todo.query({"q": JSON.stringify({"filters": ''})}, function(response) {
+            var filters = [{"name": "archived", "op": "==", "val": false},
+                {"name": "done", "op": "==", "val": false}];
+            Api.Todo.query({"q": JSON.stringify({"filters": filters})}, function(response) {
                 $scope.todos = response.objects;
                 // TODO: Stuff to handle todos marked as done
             });
