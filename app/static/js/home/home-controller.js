@@ -61,9 +61,13 @@ angular.module('todolist')
             $scope.archiveTodos = function() {
                 angular.forEach($scope.todos, function(todo) {
                     if (todo && todo.done) {
-                        console.log(todo);
                         todo.archived = true;
                         Api.Todo.update(todo);
+                        //TODO: instantly remove this from the list of todos here instead of requeyrying? LOW PRIORITY
+                        Api.Todo.query({"q": JSON.stringify({"filters": filters})}, function(response) {
+                            $scope.todos = response.objects;
+                            // TODO: Stuff to handle todos marked as done
+                        });
                     }
                 });
             };
@@ -81,4 +85,4 @@ angular.module('todolist')
             $scope.deselectAllTags = TagService.deselectAllTags;
             $scope.toggleSelectTag = TagService.toggleSelectTag;
 
-    }]);
+        }]);
