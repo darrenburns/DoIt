@@ -12,7 +12,8 @@ angular.module('todolist')
 
             $scope.todos = [];
             // TODO: fix query so that it only returns todos which are not both archived and done
-            Api.Todo.query(function(response) {
+            //var filters = [{"name": "text", "op": "contains", "val": "%y%"}];
+            Api.Todo.query({"q": JSON.stringify({"filters": ''})}, function(response) {
                 $scope.todos = response.objects;
                 // TODO: Stuff to handle todos marked as done
             });
@@ -44,9 +45,12 @@ angular.module('todolist')
                 })
             };
 
-            $scope.loadTags = function() {
+            $scope.loadTags = function(query) {
                 var deferred = $q.defer();
                 var returnedTags = $scope.allTags;
+                returnedTags = returnedTags.filter(function(item) {
+                    return item.text.indexOf(query) > -1;
+                });
                 deferred.resolve(returnedTags);
                 return deferred.promise;
             };
