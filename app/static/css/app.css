@@ -13,13 +13,17 @@ body {
     text-decoration: line-through;
 }
 
+.tags-list {
+    padding-top: -10px;
+}
+
 .tags-list .tag-item {
     color: white;
     font-size: 0.85em;
     background: #428bca;
     border: 1px solid #357ebd;
     padding: 2px;
-    margin: 1px;
+    margin: 1px 1px 1px;
     border-radius: 1px;
     display: inline-block;
     cursor: pointer;

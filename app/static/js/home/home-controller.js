@@ -71,6 +71,50 @@ angular.module('todolist')
                 });
             };
 
+            // Pomodoro timer
+            $scope.pomodoro = {
+                pomo: new Api.Pomodoro(),
+                activePomoTodo: null,
+                pomoRunning: false,  // Defines whether the pomodoro menu is open or not
+                showPomoSubmit: false,
+                startPomo: function(todo) {
+                    // Link the pomo to the selected to-do item
+                    this.pomoRunning = true;
+                    this.activePomoTodo = todo;
+                    this.pomo.todo_id = todo.id;
+
+                    // Start the timer and alter pomoRunning to true
+                    $scope.$broadcast('timer-start');
+                },
+                cancelPomo: function() {
+                    // Save the pomodoro with a failure
+                    this.pomo.success = false;
+                    this.pomoRunning = false;
+                    $scope.$broadcast('timer-stop');
+                    this.pomo.$save();
+                    this.pomo = new Api.Pomodoro();
+                    this.showPomoSubmit = false;
+                    this.activePomoTodo = null;
+                },
+                pomoFinished: function() {
+                    console.log('pomodoro has finished');
+                    this.showPomoSubmit = true;
+                    $scope.$apply();
+                },
+                submitPomo: function() {
+                    console.log('pomodoro has been submitted');
+                    this.pomo.success = true;
+                    this.pomo.$save();
+                    this.pomo = new Api.Pomodoro();
+                    this.showPomoSubmit = false;
+                    this.pomoRunning = false;
+                    this.activePomoTodo = null;
+                }
+
+
+            };
+
+
 
             $scope.selectedTags = TagService.getAllSelectedTags();
 

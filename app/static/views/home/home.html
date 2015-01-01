@@ -2,7 +2,7 @@
     <div class="col-xs-3">
         <h1 id="doit-header">Doit</h1>
     </div>
-    <div class="col-xs-6">
+    <div class="col-xs-5 col-xs-offset-1">
         <div class="doit-controls-top">
             <input type="text" class="form-control" placeholder="Search"/>
         </div>
@@ -19,7 +19,7 @@
 
 <div class="row">
 
-    <div class="col-md-4">
+    <div class="col-xs-4">
 
         <div class="panel panel-default">
             <div class="panel-body">
@@ -43,13 +43,9 @@
 
         <!-- FILTER panel -->
         <div class="panel panel-default">
-            <div class="panel-heading">
-                <b>Filter</b>
-            </div>
             <div class="panel-body">
                 <div class="row">
                     <div class="col-xs-12">
-                        <b>Tags</b>
                         <small>
                             <a href="#" ng-click="selectAllTags()">
                                 Show All
@@ -79,9 +75,57 @@
 
     </div>
 
-    <div class="col-md-8">
+    <div class="col-xs-8">
+
+        <!-- Pomodoro panel (only shows if pomodoro is running) -->
+        <div class="panel panel-default" ng-show="pomodoro.pomoRunning">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-sm-8">
+                        <p class="lead">Running Pomodoro <br/><small><em>{{ pomodoro.activePomoTodo.text }}</em></small></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="pull-right">
+                            <button type="button"
+                                    class="btn btn-success"
+                                    tooltip="Submit Pomodoro"
+                                    tooltip-placement="left"
+                                    ng-show="pomodoro.showPomoSubmit"
+                                    ng-click="pomodoro.submitPomo()">
+                                Submit
+                            </button>
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    tooltip="Cancel Pomodoro"
+                                    tooltip-placement="left"
+                                    ng-click="pomodoro.cancelPomo()">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <timer interval="1000" autostart="false" countdown="2" finish-callback="pomodoro.pomoFinished()">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: {{ ((millis/1000)/2) * 100}}%">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <p class="text-muted pull-right">
+                                <em>
+                                    {{ minutes }} minute{{ minutesS }} and {{ seconds }} second{{ secondsS }} remain.
+                                </em>
+                            </p>
+                        </div>
+                    </div>
+                </timer>
+            </div>
+        </div>
+        <!-- End of Pomodoro panel -->
+
         <!-- List of TODOs -->
         <ul class="list-group">
+            <!-- Placeholder for new to-do -->
             <li class="list-group-item todo-body" ng-if="todo.text.length > 0">
                 <div class="row">
                     <div class="col-xs-12">
@@ -96,24 +140,28 @@
                         </div>
                     </div>
                     <div class="col-xs-4">
-                        <small class="pull-right text-muted">NOW</small>
+                        <small class="pull-right text-muted">Created: NOW</small>
                     </div>
                 </div>
             </li>
+            <!-- End of placeholder -->
             <!-- TODO: Should be a directive -->
             <li ng-repeat="todo in todos track by $index | orderBy:'!created' | showSelectedOnly:selectedTags"
                 ng-class="{disabled: todo.done}"
                 class="list-group-item todo-body">
                 <div class="row">
-                    <div class="col-xs-12">
-                        <timer interval="1000">
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: {{ (seconds/60) * 100 }}%">
-                                </div>
-                            </div>
-                        </timer>
+                    <div class="col-xs-8">
                         <input type="checkbox" ng-model="todo.done"/>
                         <span class="done-{{todo.done}} lead">{{todo.text}}</span><br/>
+                    </div>
+                    <div class="col-xs-4">
+                        <button class="btn btn-default pull-right"
+                                type="button" tooltip-placement="left"
+                                tooltip="Start Pomodoro"
+                                ng-click="pomodoro.startPomo(todo)">
+                            <span class="label label-default">{{ todo.pomodoros.length }}</span>
+                            <span class="glyphicon glyphicon-play"></span>
+                        </button>
                     </div>
                 </div>
                 <div class="row">
@@ -124,7 +172,10 @@
                         </div>
                     </div>
                     <div class="col-xs-4">
-                        <small class="pull-right text-muted">{{ todo.created | date:'short' }}</small>
+                        <small class="pull-right text-muted">Created: {{ todo.created | date:'short' }}</small>
+                        <br/>
+
+                        <small class="pull-right text-muted" ng-if="todo.due">Due: {{ todo.due | date:'short' }}</small>
                     </div>
                 </div>
             </li>
