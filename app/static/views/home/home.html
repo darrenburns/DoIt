@@ -205,7 +205,9 @@
                 <div class="row">
                     <div class="col-xs-8">
                         <input type="checkbox" ng-model="todo.done"/>
-                        <span class="done-{{todo.done}} lead" ng-bind-html="todo.text | highlight:todoSearch"></span><br/>
+                        <a ng-href="#/todo/{{ todo.id }}" style="color: inherit;">
+                            <span class="done-{{todo.done}} lead" ng-bind-html="todo.text | highlight:todoSearch"></span><br/>
+                        </a>
                     </div>
                     <div class="col-xs-4">
                         <div class="btn-group pull-right">

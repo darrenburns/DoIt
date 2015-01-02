@@ -5,6 +5,10 @@ body {
 #doit-topbar {
 }
 
+.label-large {
+    margin-right: 2px;
+}
+
 /* cross fading between routes with ngView */
 
 .view-container {

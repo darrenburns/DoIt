@@ -5,10 +5,15 @@ angular.module('todolist', ['ngResource', 'ngRoute', 'ngAnimate',
         $routeProvider
             .when('/', {
                 templateUrl: 'views/home/home.html',
-                controller: 'HomeController'})
+                controller: 'HomeController'
+            })
             .when('/stats', {
                 templateUrl: 'views/stats/stats.html',
                 controller: 'StatsController'
+            })
+            .when('/todo/:todoId', {
+                templateUrl: 'views/todo/todo.html',
+                controller: 'TodoController'
             })
             .otherwise({redirectTo: '/'});
     }]);

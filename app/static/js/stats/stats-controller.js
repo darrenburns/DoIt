@@ -1,4 +1,4 @@
-module = angular.module('todolist');
+var module = angular.module('todolist');
 
 module.controller('StatsController', ['$scope', function($scope) {
 
