@@ -4,6 +4,8 @@ angular.module('todolist')
         'TodoListService', 'TagService', 'Api', '$q',
         function ($scope, TodoItem, TodoListService, TagService, Api, $q) {
 
+            $scope.todoSearch = '';
+
             $scope.allTags = [];
             Api.Tag.query(function(response) {
                 $scope.allTags = response.objects;

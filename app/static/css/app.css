@@ -5,6 +5,10 @@ body {
 #doit-topbar {
 }
 
+.pointer {
+    cursor: pointer;
+}
+
 .doit-controls-top {
     margin-top: 22px;
 }

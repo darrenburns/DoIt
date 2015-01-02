@@ -4,7 +4,7 @@
     </div>
     <div class="col-xs-5 col-xs-offset-1">
         <div class="doit-controls-top">
-            <input type="text" class="form-control" placeholder="Search"/>
+            <input type="text" class="form-control" placeholder="Search" ng-model="todoSearch"/>
         </div>
     </div>
     <div class="col-xs-3">
@@ -149,13 +149,13 @@
             </li>
             <!-- End of placeholder -->
             <!-- TODO: Should be a directive -->
-            <li ng-repeat="todo in todos track by $index | orderBy:'!created' | showSelectedOnly:selectedTags"
+            <li ng-repeat="todo in todos | filter:todoSearch | orderBy:'!created' | showSelectedOnly:selectedTags"
                 ng-class="{disabled: todo.done}"
                 class="list-group-item todo-body">
                 <div class="row">
                     <div class="col-xs-8">
                         <input type="checkbox" ng-model="todo.done"/>
-                        <span class="done-{{todo.done}} lead">{{todo.text}}</span><br/>
+                        <span class="done-{{todo.done}} lead" ng-bind-html="todo.text | highlight:todoSearch"></span><br/>
                     </div>
                     <div class="col-xs-4">
                         <div class="btn-group pull-right">
@@ -163,7 +163,7 @@
                                 Action <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu" role="menu">
-                                <li ng-click="pomodoro.startPomo(todo)"><a>Start Pomo</a></li>
+                                <li ng-click="pomodoro.startPomo(todo)"><a><span class="pointer">Start Pomo</span></a></li>
                                 <li class="divider"></li>
                                 <li ng-click="deleteTodo(todo)"><a href="#">Delete Todo</a></li>
                             </ul>
