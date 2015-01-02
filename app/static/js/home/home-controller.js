@@ -44,6 +44,11 @@ angular.module('todolist')
                 });
             };
 
+            $scope.deleteTodo = function(todo) {
+                Api.Todo.delete(todo);
+                // TODO: delete floating tags (no references)
+            };
+
             // Loads tags for the tag input field
             $scope.loadTags = function(query) {
                 var deferred = $q.defer();
@@ -88,11 +93,9 @@ angular.module('todolist')
                 },
                 cancelPomo: function() {
                     // Save the pomodoro with a failure
-                    this.pomo.success = false;
-                    this.pomoRunning = false;
                     $scope.$broadcast('timer-stop');
-                    this.pomo.$save();
                     this.pomo = new Api.Pomodoro();
+                    this.pomoRunning = false;
                     this.showPomoSubmit = false;
                     this.activePomoTodo = null;
                 },

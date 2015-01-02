@@ -8,7 +8,8 @@ module.factory('Api', ['$resource',
             Todo: $resource(BASE_API_URL + 'todo/:id', {id: '@id'},
                 {
                     'query': {method: 'GET', isArray: false},
-                    'update': {method: 'PUT'}
+                    'update': {method: 'PUT'},
+                    'delete': {method: 'DELETE'}
                 }
             ),
             Tag: $resource(BASE_API_URL + 'tag/:id', {id: '@id'},
