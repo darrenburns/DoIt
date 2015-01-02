@@ -16,4 +16,6 @@ class Todo(db.Model):
     created = db.Column(db.DateTime, unique=False, default=db.func.now())
     done = db.Column(db.Boolean, unique=False, default=False)
     archived = db.Column(db.Boolean, unique=False, default=False)
+    note = db.Column(db.Text, unique=False)
     pomodoros = db.relationship('Pomodoro', backref='pomodoro', lazy='dynamic')
+
