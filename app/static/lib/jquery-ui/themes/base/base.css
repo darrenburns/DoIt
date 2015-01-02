@@ -1,5 +1,5 @@
 /*!
- * jQuery UI CSS Framework 1.11.1
+ * jQuery UI CSS Framework 1.11.2
  * http://jqueryui.com
  *
  * Copyright 2014 jQuery Foundation and other contributors
@@ -9,6 +9,7 @@
  * http://api.jqueryui.com/category/theming/
  */
 @import url("core.css");
+
 @import url("accordion.css");
 @import url("autocomplete.css");
 @import url("button.css");
