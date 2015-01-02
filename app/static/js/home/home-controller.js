@@ -38,6 +38,7 @@ angular.module('todolist')
                     }
 
                 }
+                // TODO: add angular form validation to make sure blank todos cant be submitted
                 $scope.todo.$save(function() {
                     console.log('saved');
                     $scope.todo = new Api.Todo();  // Reset the to-do
@@ -104,12 +105,19 @@ angular.module('todolist')
                 pomoFinished: function() {
                     console.log('pomodoro has finished');
                     this.showPomoSubmit = true;
+                    var audio = new Audio('../../audio/gong.mp3');
+                    audio.play();
                     $scope.$apply();
                 },
                 submitPomo: function() {
                     console.log('pomodoro has been submitted');
                     this.pomo.success = true;
-                    this.pomo.$save();
+                    this.pomo.$save(function() {
+                        // TODO: shouldn't have to query again here.
+                        Api.Todo.query({"q": JSON.stringify({"filters": filters, "order_by": orderBy})}, function(response) {
+                            $scope.todos = response.objects;
+                        });
+                    });
                     this.pomo = new Api.Pomodoro();
                     this.showPomoSubmit = false;
                     this.pomoRunning = false;

@@ -87,7 +87,11 @@
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-8">
-                        <p class="lead">Running Pomodoro <br/><small><em>{{ pomodoro.activePomoTodo.text }}</em></small></p>
+                        <p class="lead">
+                            <span ng-show="pomodoro.showPomoSubmit"><strong>Pomodoro Complete!</strong></span>
+                            <span ng-hide="pomodoro.showPomoSubmit">Running Pomodoro...</span>
+                            <br/><small><em>{{ pomodoro.activePomoTodo.text }}</em></small>
+                        </p>
                     </div>
                     <div class="col-sm-4">
                         <div class="pull-right">
@@ -115,7 +119,10 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-12">
+                        <div class="col-xs-6">
+                            You've completed {{ pomodoro.activePomoTodo.pomodoros.length }} pomodoros for this task.
+                        </div>
+                        <div class="col-xs-6">
                             <p class="text-muted pull-right">
                                 <em>
                                     {{ minutes }} minute{{ minutesS }} and {{ seconds }} second{{ secondsS }} remain.
@@ -127,6 +134,10 @@
             </div>
         </div>
         <!-- End of Pomodoro panel -->
+
+        <!-- BREAK Panel - shows during the five minute break between each pomodoro -->
+
+        <!-- End of Break panel -->
 
         <!-- List of TODOs -->
         <ul class="list-group">
@@ -179,12 +190,6 @@
                             <!-- Tags within a single to-do -->
                             <span ng-repeat="tag in todo.tags" class="tag-item">{{ tag.text }}</span>
                         </div>
-                    </div>
-                    <div class="col-xs-6">
-                        <span class="label label-success">
-                            {{ todo.pomodoros.length }}
-                        </span>
-                    </div>
                     </div>
                 </div>
             </li>
