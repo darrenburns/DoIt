@@ -1,8 +1,8 @@
 angular.module('todolist')
     .controller('HomeController',
     ['$scope', 'TodoItem',
-        'TodoListService', 'TagService', 'Api', '$q',
-        function ($scope, TodoItem, TodoListService, TagService, Api, $q) {
+        'TodoListService', 'TagService', 'Api', '$q', '$timeout',
+        function ($scope, TodoItem, TodoListService, TagService, Api, $q, $timeout) {
 
             $scope.todoSearch = '';
 
@@ -49,8 +49,11 @@ angular.module('todolist')
             };
 
             $scope.deleteTodo = function(todo) {
-                Api.Todo.delete(todo);
-                $scope.todos.
+                $timeout(function() {
+                    todo.deleted =  true;
+                    Api.Todo.delete(todo);
+                    console.log($scope.todos);
+                });
                 // TODO: delete floating tags (no references)
             };
 

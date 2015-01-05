@@ -199,8 +199,8 @@
             <!-- End of placeholder -->
             <!-- TODO: Should be a directive -->
             <li ng-repeat="todo in todos | filter:todoSearch | orderBy:'!created' | showSelectedOnly:selectedTags"
+                ng-if="todo.deleted == false"
                 ng-class="{disabled: todo.done}"
-                ng-animate="'animate'"
                 class="list-group-item todo-body">
                 <div class="row">
                     <div class="col-xs-8">
