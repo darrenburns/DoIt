@@ -14,7 +14,8 @@ angular.module('todolist')
 
             $scope.todos = [];
             var filters = [{"name": "archived", "op": "==", "val": false},
-                {"name": "done", "op": "==", "val": false}];
+                {"name": "done", "op": "==", "val": false},
+                {"name": "deleted", "op": "==", "val": false}];
             var orderBy = [{"field": "created", "direction": "desc"}];
             Api.Todo.query({"q": JSON.stringify({"filters": filters, "order_by": orderBy})}, function(response) {
                 $scope.todos = response.objects;
@@ -49,6 +50,7 @@ angular.module('todolist')
 
             $scope.deleteTodo = function(todo) {
                 Api.Todo.delete(todo);
+                $scope.todos.
                 // TODO: delete floating tags (no references)
             };
 

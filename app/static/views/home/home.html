@@ -206,7 +206,7 @@
                     <div class="col-xs-8">
                         <input type="checkbox" ng-model="todo.done"/>
                         <a ng-href="#/todo/{{ todo.id }}" style="color: inherit;">
-                            <span class="done-{{todo.done}} lead" ng-bind-html="todo.text | highlight:todoSearch"></span><br/>
+                            <span class="done-{{todo.done}} lead" ng-bind-html="todo.text | highlight:todoSearch"></span>{{ todo.deleted }}<br/>
                         </a>
                     </div>
                     <div class="col-xs-4">
@@ -217,7 +217,7 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li ng-click="pomodoro.startPomo(todo)"><a><span class="pointer">Start Pomo</span></a></li>
                                 <li class="divider"></li>
-                                <li ng-click="deleteTodo(todo)"><a href="#">Delete Todo</a></li>
+                                <li ng-click="deleteTodo(todo)"><a><span class="pointer">Delete Todo</span></a></li>
                             </ul>
                         </div>
                     </div>
