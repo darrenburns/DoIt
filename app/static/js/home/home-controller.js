@@ -14,7 +14,8 @@ angular.module('todolist')
 
             $scope.todos = [];
             var filters = [{"name": "archived", "op": "==", "val": false},
-                {"name": "done", "op": "==", "val": false}];
+                {"name": "done", "op": "==", "val": false},
+                {"name": "deleted", "op": "==", "val": false}];
             var orderBy = [{"field": "created", "direction": "desc"}];
             Api.Todo.query({"q": JSON.stringify({"filters": filters, "order_by": orderBy})}, function(response) {
                 $scope.todos = response.objects;
@@ -38,6 +39,7 @@ angular.module('todolist')
                     }
 
                 }
+                // TODO: add angular form validation to make sure blank todos cant be submitted
                 $scope.todo.$save(function() {
                     console.log('saved');
                     $scope.todo = new Api.Todo();  // Reset the to-do
@@ -48,6 +50,7 @@ angular.module('todolist')
 
             $scope.deleteTodo = function(todo) {
                 Api.Todo.delete(todo);
+                $scope.todos.
                 // TODO: delete floating tags (no references)
             };
 
@@ -78,15 +81,34 @@ angular.module('todolist')
                 });
             };
 
+            var quotes = [
+                {
+                    quote: 'It does not matter how slowly you go as long as you do not stop.',
+                    by: 'Confucius'
+                },
+                {
+                    quote: 'Our greatest weakness lies in giving up. The most certain way to succeed is always to try just one more time.',
+                    by: 'Thomas A. Edison'
+                },
+                {
+                    quote: 'Always do your best. What you plant now, you will harvest later.',
+                    by: 'Og Mandino'
+                }
+            ];
+            var randomQuote = function() {
+                return quotes[Math.floor(Math.random() * quotes.length)];
+            };
+            $scope.currentQuote = '';
+
             // Pomodoro timer
+            var gongAudio = new Audio('../../audio/gong.mp3');
             $scope.pomodoro = {
                 pomo: new Api.Pomodoro(),
                 activePomoTodo: null,
-                pomoRunning: false,  // Defines whether the pomodoro menu is open or not
-                showPomoSubmit: false,
+                pomoState: 'off',  // 'running' || 'finished' || 'break' || 'break-finished' || 'off'
                 startPomo: function(todo) {
                     // Link the pomo to the selected to-do item
-                    this.pomoRunning = true;
+                    this.pomoState = 'running';
                     this.activePomoTodo = todo;
                     this.pomo.todo_id = todo.id;
 
@@ -97,25 +119,36 @@ angular.module('todolist')
                     // Save the pomodoro with a failure
                     $scope.$broadcast('timer-stop');
                     this.pomo = new Api.Pomodoro();
-                    this.pomoRunning = false;
-                    this.showPomoSubmit = false;
+                    this.pomoState = 'off';
                     this.activePomoTodo = null;
                 },
                 pomoFinished: function() {
                     console.log('pomodoro has finished');
-                    this.showPomoSubmit = true;
+                    this.pomoState = 'finished';
+                    gongAudio.load();
+                    gongAudio.play();
                     $scope.$apply();
                 },
                 submitPomo: function() {
                     console.log('pomodoro has been submitted');
+                    this.pomoState = 'break';
+                    $scope.currentQuote = randomQuote();
                     this.pomo.success = true;
-                    this.pomo.$save();
+                    this.pomo.$save(function() {
+                        // TODO: shouldn't have to query again here.
+                        Api.Todo.query({"q": JSON.stringify({"filters": filters, "order_by": orderBy})}, function(response) {
+                            $scope.todos = response.objects;
+                        });
+                    });
                     this.pomo = new Api.Pomodoro();
-                    this.showPomoSubmit = false;
-                    this.pomoRunning = false;
-                    this.activePomoTodo = null;
+                },
+                finishBreak: function() {
+                    gongAudio.load();
+                    gongAudio.play();
+                    this.pomoState = 'break-finished';
+                    $scope.$apply();
+                    console.log('break is finished!');
                 }
-
 
             };
 

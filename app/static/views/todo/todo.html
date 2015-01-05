@@ -1,0 +1,31 @@
+<h1>Todo
+</h1>
+
+<div class="row">
+    <div class="col-xs-7">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-8">
+                        <p class="lead">
+                            {{ todo.text }}<br/>
+                            <span class="label label-primary label-large" ng-repeat="tag in todo.tags">{{ tag.text }}</span>
+                            <br/>
+                            <span class="label label-success label-large" ng-if="todo.done">complete</span>
+                            <span class="label label-danger label-large" ng-if="!todo.done">unfinished</span>
+                            <span class="label label-default label-large" ng-if="todo.archived">archived</span>
+                        </p>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="btn-group pull-right">
+                            <button type="button" class="btn btn-default" ng-click="deleteTodo()">
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{ todo }}

@@ -1,6 +1,6 @@
 <div id="doit-topbar" class="row">
     <div class="col-xs-3">
-        <h1 id="doit-header">Doit</h1>
+        <h1 id="doit-header">DoIt</h1>
     </div>
     <div class="col-xs-5 col-xs-offset-1">
         <div class="doit-controls-top">
@@ -12,9 +12,11 @@
             <button ng-click="archiveTodos()" type="button" class="btn btn-default" tooltip-placement="left" tooltip="Archive Complete">
                 <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
             </button>
-            <button type="button" class="btn btn-default">
-                Statistics
-            </button>
+            <a ng-href="#stats">
+                <button type="button" class="btn btn-default">
+                    Statistics
+                </button>
+            </a>
         </div>
     </div>
 </div>
@@ -81,11 +83,15 @@
     <div class="col-xs-8">
 
         <!-- Pomodoro panel (only shows if pomodoro is running) -->
-        <div class="panel panel-default" ng-show="pomodoro.pomoRunning">
+        <div class="panel panel-default" ng-show="pomodoro.pomoState == 'running' || pomodoro.pomoState == 'finished'">
             <div class="panel-body">
                 <div class="row">
                     <div class="col-sm-8">
-                        <p class="lead">Running Pomodoro <br/><small><em>{{ pomodoro.activePomoTodo.text }}</em></small></p>
+                        <p class="lead">
+                            <span ng-show="pomodoro.pomoState == 'finished'"><strong>Pomodoro Complete!</strong></span>
+                            <span ng-show="pomodoro.pomoState == 'running'">Running Pomodoro...</span>
+                            <br/><small><em>{{ pomodoro.activePomoTodo.text }}</em></small>
+                        </p>
                     </div>
                     <div class="col-sm-4">
                         <div class="pull-right">
@@ -93,7 +99,7 @@
                                     class="btn btn-success"
                                     tooltip="Submit Pomodoro"
                                     tooltip-placement="left"
-                                    ng-show="pomodoro.showPomoSubmit"
+                                    ng-show="pomodoro.pomoState == 'finished'"
                                     ng-click="pomodoro.submitPomo()">
                                 Submit
                             </button>
@@ -109,7 +115,7 @@
                 </div>
                 <timer interval="1000" autostart="false" countdown="2" finish-callback="pomodoro.pomoFinished()">
                     <div class="progress">
-                        <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: {{ ((millis/1000)/2) * 100}}%">
+                        <div class="progress-bar progress-bar-striped progress-bar-danger active" role="progressbar" style="width: {{ ((millis/1000)/2) * 100}}%">
                         </div>
                     </div>
                     <div class="row">
@@ -125,6 +131,49 @@
             </div>
         </div>
         <!-- End of Pomodoro panel -->
+
+        <!-- BREAK Panel - shows during the five minute break between each pomodoro -->
+        <div class="panel panel-default" ng-if="pomodoro.pomoState == 'break' || pomodoro.pomoState == 'break-finished'">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-7">
+                        <p class="lead" ng-show="pomodoro.pomoState=='break'">Taking a break. <br/>
+                            <small><em>Have a five minute break before your next Pomodoro.</em></small>
+                        </p>
+                        <p class="lead" ng-show="pomodoro.pomoState=='break-finished'"><strong>Break Over! </strong><br/>
+                            <small><em>It's time to begin another Pomodoro.</em></small>
+                        </p>
+                    </div>
+                    <div class="col-xs-5">
+                        <div class="pull-right">
+                            <button type="button"
+                                    class="btn btn-default"
+                                    tooltip="Submit Pomodoro"
+                                    tooltip-placement="left"
+                                    ng-show="pomodoro.pomoState == 'break-finished'"
+                                    ng-click="pomodoro.startPomo(pomodoro.activePomoTodo)">
+                                <span class="glyphicon glyphicon-refresh"></span> Repeat Previous
+                            </button>
+                            <blockquote ng-show="pomodoro.pomoState == 'break'" style="font-size: 13px;">
+                                <p>
+                                    {{ currentQuote.quote }}
+                                </p>
+                                <footer>{{ currentQuote.by }}</footer>
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+                <timer interval="1000" countdown="5" finish-callback="pomodoro.finishBreak()">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-success active" role="progressbar" style="width: {{ ((millis/1000)/5) * 100}}%">
+                        </div>
+                    </div>
+                    <p class="muted">{{ minutes }} minute{{ minutesS }} and {{ seconds }} second{{ secondsS }} remaining before next Pomodoro.</p>
+                </timer>
+            </div>
+
+        </div>
+        <!-- End of Break panel -->
 
         <!-- List of TODOs -->
         <ul class="list-group">
@@ -151,11 +200,14 @@
             <!-- TODO: Should be a directive -->
             <li ng-repeat="todo in todos | filter:todoSearch | orderBy:'!created' | showSelectedOnly:selectedTags"
                 ng-class="{disabled: todo.done}"
+                ng-animate="'animate'"
                 class="list-group-item todo-body">
                 <div class="row">
                     <div class="col-xs-8">
                         <input type="checkbox" ng-model="todo.done"/>
-                        <span class="done-{{todo.done}} lead" ng-bind-html="todo.text | highlight:todoSearch"></span><br/>
+                        <a ng-href="#/todo/{{ todo.id }}" style="color: inherit;">
+                            <span class="done-{{todo.done}} lead" ng-bind-html="todo.text | highlight:todoSearch"></span>{{ todo.deleted }}<br/>
+                        </a>
                     </div>
                     <div class="col-xs-4">
                         <div class="btn-group pull-right">
@@ -165,23 +217,17 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li ng-click="pomodoro.startPomo(todo)"><a><span class="pointer">Start Pomo</span></a></li>
                                 <li class="divider"></li>
-                                <li ng-click="deleteTodo(todo)"><a href="#">Delete Todo</a></li>
+                                <li ng-click="deleteTodo(todo)"><a><span class="pointer">Delete Todo</span></a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-xs-8">
+                    <div class="col-xs-6">
                         <div class="tags-list">
                             <!-- Tags within a single to-do -->
                             <span ng-repeat="tag in todo.tags" class="tag-item">{{ tag.text }}</span>
                         </div>
-                    </div>
-                    <div class="col-xs-4">
-                        <small class="pull-right text-muted">Created: {{ todo.created | date:'short' }}</small>
-                        <br/>
-
-                        <small class="pull-right text-muted" ng-if="todo.due">Due: {{ todo.due | date:'short' }}</small>
                     </div>
                 </div>
             </li>
