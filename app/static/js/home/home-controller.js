@@ -127,7 +127,7 @@ angular.module('todolist')
                     this.activePomoTodo = todo;
                     this.pomo.todo_id = todo.id;
 
-                    // Start the timer and alter pomoRunning to true
+                    // Start the timer and alter pomoState to 'running'
                     $scope.$broadcast('timer-start');
                 },
                 cancelPomo: function() {

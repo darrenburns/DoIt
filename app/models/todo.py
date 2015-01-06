@@ -1,15 +1,23 @@
 from app import db
+from app.models.tag import Tag
+from app.models.user import User
+
 
 todo_tags_assoc = db.Table('todo_tags',
-                           db.Column('todo_id', db.Integer, db.ForeignKey('todo.id')),
-                           db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+                           db.Column('todo_id', db.Integer, db.ForeignKey('doit_v1.todo.id')),
+                           db.Column('tag_id', db.Integer, db.ForeignKey(Tag.id))
 )
 
 
 class Todo(db.Model):
+
+    __tablename__ = 'todo'
+    __table_args__ = {"schema": "doit_v1"}
+
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     text = db.Column(db.Text, unique=False)
-    tags = db.relationship('Tag',
+    tags = db.relationship(Tag,
                            secondary=todo_tags_assoc,
                            backref=db.backref('todos', lazy='dynamic'))
     due = db.Column(db.DateTime, unique=False)
