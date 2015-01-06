@@ -30,7 +30,7 @@ angular.module('todolist')
                     // Replace the attempted newly created tag with the already existing tag
                     for (var newTagIdx = 0; newTagIdx < $scope.todo.tags.length; newTagIdx++) {
                         var newTag = $scope.todo.tags[newTagIdx];
-                        for (var oldTagIdx = 0; oldTagIdx < $scope.allTags; oldTagIdx++) {
+                        for (var oldTagIdx = 0; oldTagIdx < $scope.allTags.length; oldTagIdx++) {
                             var oldTag = $scope.allTags[oldTagIdx];
                             if (oldTag.text == newTag.text) {
                                 $scope.todo.tags[newTagIdx] = oldTag;
