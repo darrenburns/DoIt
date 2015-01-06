@@ -94,6 +94,18 @@ angular.module('todolist')
                     by: 'Thomas A. Edison'
                 },
                 {
+                    quote: 'The secret to getting ahead is getting started.',
+                    by: 'Unknown'
+                },
+                {
+                    quote: 'It always seems impossible until it is done.',
+                    by: 'Unknown'
+                },
+                {
+                    quote: 'A year from now you\'ll wish you started today.',
+                    by: 'Karen Lamb'
+                },
+                {
                     quote: 'Always do your best. What you plant now, you will harvest later.',
                     by: 'Og Mandino'
                 }

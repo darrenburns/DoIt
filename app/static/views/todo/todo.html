@@ -1,31 +1,52 @@
-<h1>Todo
-</h1>
+<div class="row">
+    <div class="col-xs-8">
+        <h1 class="page-header">{{ todo.text }}<br/>
+
+            <span class="label label-primary label-large" ng-repeat="tag in todo.tags">{{ tag.text }}</span>
+            <span class="label label-success label-large" ng-if="todo.done">complete</span>
+            <span class="label label-danger label-large" ng-if="!todo.done">unfinished</span>
+            <span class="label label-default label-large" ng-if="todo.archived">archived</span>
+        </h1>
+    </div>
+
+    <div class="col-xs-4">
+        <p class="text-muted pull-right" style="margin-top: 50px;">
+            Created: {{ todo.created | date:'short' }} <br/>
+            Due: {{ todo.due | date:'short'}} <br/>
+            Target: (todo.pomo_target)
+        </p>
+
+    </div>
+
+</div>
 
 <div class="row">
-    <div class="col-xs-7">
+    <div class="col-sm-7">
         <div class="panel panel-default">
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-xs-8">
-                        <p class="lead">
-                            {{ todo.text }}<br/>
-                            <span class="label label-primary label-large" ng-repeat="tag in todo.tags">{{ tag.text }}</span>
-                            <br/>
-                            <span class="label label-success label-large" ng-if="todo.done">complete</span>
-                            <span class="label label-danger label-large" ng-if="!todo.done">unfinished</span>
-                            <span class="label label-default label-large" ng-if="todo.archived">archived</span>
-                        </p>
-                    </div>
-                    <div class="col-xs-4">
-                        <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-default" ng-click="deleteTodo()">
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            <div class="panel-heading">
+                <h4>Notes</h4>
+            </div>
+            <div class="panel-body" btf-markdown="todo.note">
             </div>
         </div>
     </div>
+
+    <div class="col-sm-5">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4>Stats</h4>
+            </div>
+            <div class="panel-body">
+                You've completed <span class="label label-success">{{ todo.pomodoros.length }}</span> Pomodoros for this task.
+
+                <br/>
+                You are <span class="label label-success">x</span> Pomodoros from your target.
+                <br/>
+                    You have X days remaining to complete this task. <br/>
+                (BS3 ProgressBar showing how many days used vs how many remaining)
+            </div>
+
+        </div>
+    </div>
+
 </div>
-{{ todo }}
