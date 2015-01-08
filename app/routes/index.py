@@ -5,6 +5,7 @@ from flask import render_template, session, url_for, redirect, jsonify, request,
 import requests
 import jwt
 from app import app, db
+from app.models.todo import Todo
 from app.models.user import User
 from config import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SECRET_KEY, REDIRECT_URI
 

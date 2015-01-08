@@ -2,7 +2,12 @@ body {
     background-color: #ECF0F1;
 }
 
-#doit-topbar {
+.doit-brand {
+    font-family: 'Bree Serif', serif;
+}
+
+.doit-brand-login {
+    margin-bottom: 0;
 }
 
 .btn-google-plus {
@@ -83,7 +88,7 @@ body {
 }
 
 .doit-controls-top {
-    margin-top: 22px;
+    margin-top: 26px;
 }
 
 .done-true {

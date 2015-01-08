@@ -19,6 +19,11 @@ module.factory('Api', ['$resource',
                 {
                     'query': {method: 'GET', isArray: false}
                 }
+            ),
+            User: $resource(BASE_API_URL + 'user/:id', {},
+                {
+                    'query': {method: 'GET', isArray: false}
+                }
             )
         }
 

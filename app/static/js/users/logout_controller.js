@@ -1,15 +1,15 @@
 var module = angular.module('todolist');
 
-module.controller('LogoutController', ['$auth',
+module.controller('LogoutController', ['$auth', '$location',
 
-    function($auth) {
+    function($auth, $location) {
 
         if (!$auth.isAuthenticated()) {
             return;
         }
         $auth.logout()
             .then(function() {
-                console.log('LOGGED OUT');
+                $location.path('/#/login')
             });
 
     }

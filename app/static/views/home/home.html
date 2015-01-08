@@ -1,12 +1,15 @@
 <div id="doit-topbar" class="row">
     <div class="col-xs-2">
-        <h1 id="doit-header">DoIt</h1>
+        <h1 class="doit-brand">FocusOn</h1>
     </div>
     <div class="col-xs-2">
         <div class="doit-controls-top">
-            {{ userProfile.displayName }}
-            <button class="btn btn-block btn-google-plus" ui-sref="logout">
-                Logout
+            <button class="btn btn-default"
+                    tooltip="{{ user.email }}"
+                    tooltip-animation="false"
+                    tooltip-placement="bottom"
+                    tooltip-trigger>
+                {{ user.displayName }}
             </button>
         </div>
     </div>
@@ -22,6 +25,9 @@
             </button>
             <button type="button" class="btn btn-default" ui-sref="stats">
                 <span class="fa fa-line-chart"></span>
+            </button>
+            <button class="btn btn-default" ui-sref="logout">
+                <span class="fa fa-power-off"></span>
             </button>
         </div>
     </div>
@@ -54,191 +60,163 @@
 
         <!-- FILTER panel -->
         <div class="panel panel-default">
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <small>
-                            <a href="#" ng-click="selectAllTags()">
-                                Show All
-                            </a>
-                            <a href="#" ng-click="deselectAllTags()">
-                                Hide All
-                            </a>
-                        </small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="tags-list">
-                            <ul>
-                                <li ng-repeat="tag in allTags track by $index"
-                                    class="tag-item" ng-click="toggleSelectTag(tag)"
-                                    ng-style="{ 'background-color': tag.selected ? '' : '#88A8BB' }">
-                                    {{ tag.text }}
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="panel-body"></div>
         </div>
         <!-- End FILTER panel -->
 
-    </div>
+        <div class="col-xs-8">
 
-    <div class="col-xs-8">
-
-        <!-- Pomodoro panel (only shows if pomodoro is running) -->
-        <div class="panel panel-default" ng-show="pomodoro.pomoState == 'running' || pomodoro.pomoState == 'finished'">
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-sm-8">
-                        <p class="lead">
-                            <span ng-show="pomodoro.pomoState == 'finished'"><strong>Pomodoro Complete!</strong></span>
-                            <span ng-show="pomodoro.pomoState == 'running'">Running Pomodoro...</span>
-                            <br/><small><em>{{ pomodoro.activePomoTodo.text }}</em></small>
-                        </p>
-                    </div>
-                    <div class="col-sm-4">
-                        <div class="pull-right">
-                            <button type="button"
-                                    class="btn btn-success"
-                                    tooltip="Submit Pomodoro"
-                                    tooltip-placement="left"
-                                    ng-show="pomodoro.pomoState == 'finished'"
-                                    ng-click="pomodoro.submitPomo()">
-                                Submit
-                            </button>
-                            <button type="button"
-                                    class="btn btn-danger"
-                                    tooltip="Cancel Pomodoro"
-                                    tooltip-placement="left"
-                                    ng-click="pomodoro.cancelPomo()">
-                                <span class="glyphicon glyphicon-remove"></span>
-                            </button>
+            <!-- Pomodoro panel (only shows if pomodoro is running) -->
+            <div class="panel panel-default" ng-show="pomodoro.pomoState == 'running' || pomodoro.pomoState == 'finished'">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-sm-8">
+                            <p class="lead">
+                                <span ng-show="pomodoro.pomoState == 'finished'"><strong>Pomodoro Complete!</strong></span>
+                                <span ng-show="pomodoro.pomoState == 'running'">Running Pomodoro...</span>
+                                <br/><small><em>{{ pomodoro.activePomoTodo.text }}</em></small>
+                            </p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="pull-right">
+                                <button type="button"
+                                        class="btn btn-success"
+                                        tooltip="Submit Pomodoro"
+                                        tooltip-placement="left"
+                                        ng-show="pomodoro.pomoState == 'finished'"
+                                        ng-click="pomodoro.submitPomo()">
+                                    Submit
+                                </button>
+                                <button type="button"
+                                        class="btn btn-danger"
+                                        tooltip="Cancel Pomodoro"
+                                        tooltip-placement="left"
+                                        ng-click="pomodoro.cancelPomo()">
+                                    <span class="glyphicon glyphicon-remove"></span>
+                                </button>
+                            </div>
                         </div>
                     </div>
+                    <timer interval="1000" autostart="false" countdown="2" finish-callback="pomodoro.pomoFinished()">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-danger active" role="progressbar" style="width: {{ ((millis/1000)/2) * 100}}%">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <p class="text-muted pull-right">
+                                    <em>
+                                        {{ minutes }} minute{{ minutesS }} and {{ seconds }} second{{ secondsS }} remain.
+                                    </em>
+                                </p>
+                            </div>
+                        </div>
+                    </timer>
                 </div>
-                <timer interval="1000" autostart="false" countdown="2" finish-callback="pomodoro.pomoFinished()">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-danger active" role="progressbar" style="width: {{ ((millis/1000)/2) * 100}}%">
+            </div>
+            <!-- End of Pomodoro panel -->
+
+            <!-- BREAK Panel - shows during the five minute break between each pomodoro -->
+            <div class="panel panel-default" ng-if="pomodoro.pomoState == 'break' || pomodoro.pomoState == 'break-finished'">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-7">
+                            <p class="lead" ng-show="pomodoro.pomoState=='break'">Taking a break. <br/>
+                                <small><em>Have a five minute break before your next Pomodoro.</em></small>
+                            </p>
+                            <p class="lead" ng-show="pomodoro.pomoState=='break-finished'"><strong>Break Over! </strong><br/>
+                                <small><em>It's time to begin another Pomodoro.</em></small>
+                            </p>
+                        </div>
+                        <div class="col-xs-5">
+                            <div class="pull-right">
+                                <button type="button"
+                                        class="btn btn-default"
+                                        ng-show="pomodoro.pomoState == 'break-finished'"
+                                        ng-click="pomodoro.startPomo(pomodoro.activePomoTodo)">
+                                    <i class="fa fa-refresh fa-spin"></i> Repeat Previous
+                                </button>
+                                <blockquote ng-show="pomodoro.pomoState == 'break'">
+                                    <p>
+                                        {{ currentQuote.quote }}
+                                    </p>
+                                    <footer>{{ currentQuote.by }}</footer>
+                                </blockquote>
+                            </div>
+                        </div>
+                    </div>
+                    <timer interval="1000" countdown="5" finish-callback="pomodoro.finishBreak()">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-success active" role="progressbar" style="width: {{ ((millis/1000)/5) * 100}}%">
+                            </div>
+                        </div>
+                        <p class="muted">{{ minutes }} minute{{ minutesS }} and {{ seconds }} second{{ secondsS }} remaining before next Pomodoro.</p>
+                    </timer>
+                </div>
+
+            </div>
+            <!-- End of Break panel -->
+
+            <!-- List of TODOs -->
+            <ul class="list-group">
+                <!-- Placeholder for new to-do -->
+                <li class="list-group-item todo-body" ng-if="todo.text.length > 0">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <span class="done-{{todo.done}} lead">{{todo.text}}</span>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-xs-12">
-                            <p class="text-muted pull-right">
-                                <em>
-                                    {{ minutes }} minute{{ minutesS }} and {{ seconds }} second{{ secondsS }} remain.
-                                </em>
-                            </p>
+                        <div class="col-xs-8">
+                            <div class="tags-list">
+                                <!-- Tags within a single to-do -->
+                                <span ng-repeat="tag in todo.tags" class="tag-item">{{ tag.text }}</span>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <small class="pull-right text-muted">Created: NOW</small>
                         </div>
                     </div>
-                </timer>
-            </div>
-        </div>
-        <!-- End of Pomodoro panel -->
-
-        <!-- BREAK Panel - shows during the five minute break between each pomodoro -->
-        <div class="panel panel-default" ng-if="pomodoro.pomoState == 'break' || pomodoro.pomoState == 'break-finished'">
-            <div class="panel-body">
-                <div class="row">
-                    <div class="col-xs-7">
-                        <p class="lead" ng-show="pomodoro.pomoState=='break'">Taking a break. <br/>
-                            <small><em>Have a five minute break before your next Pomodoro.</em></small>
-                        </p>
-                        <p class="lead" ng-show="pomodoro.pomoState=='break-finished'"><strong>Break Over! </strong><br/>
-                            <small><em>It's time to begin another Pomodoro.</em></small>
-                        </p>
-                    </div>
-                    <div class="col-xs-5">
-                        <div class="pull-right">
-                            <button type="button"
-                                    class="btn btn-default"
-                                    ng-show="pomodoro.pomoState == 'break-finished'"
-                                    ng-click="pomodoro.startPomo(pomodoro.activePomoTodo)">
-                                <i class="fa fa-refresh fa-spin"></i> Repeat Previous
-                            </button>
-                            <blockquote ng-show="pomodoro.pomoState == 'break'">
-                                <p>
-                                    {{ currentQuote.quote }}
-                                </p>
-                                <footer>{{ currentQuote.by }}</footer>
-                            </blockquote>
+                </li>
+                <!-- End of placeholder -->
+                <!-- TODO: Should be a directive -->
+                <li ng-repeat="todo in todos | filter:todoSearch | orderBy:'!created' | showSelectedOnly:selectedTags"
+                    ng-if="todo.deleted == false"
+                    ng-class="{disabled: todo.done}"
+                    class="list-group-item todo-body">
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <input type="checkbox" ng-model="todo.done"/>
+                            <a ng-href="#todo/{{ todo.id }}" style="color: inherit;">
+                                <span class="done-{{todo.done}} lead" ng-bind-html="todo.text | highlight:todoSearch"></span><br/>
+                            </a>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="btn-group pull-right">
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                                    Action <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li ng-click="pomodoro.startPomo(todo)"><a><span class="pointer">Start Pomo</span></a></li>
+                                    <li class="divider"></li>
+                                    <li ng-click="deleteTodo(todo)"><a><span class="pointer">Delete Todo</span></a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <timer interval="1000" countdown="5" finish-callback="pomodoro.finishBreak()">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-striped progress-bar-success active" role="progressbar" style="width: {{ ((millis/1000)/5) * 100}}%">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <div class="tags-list">
+                                <!-- Tags within a single to-do -->
+                                <span ng-repeat="tag in todo.tags" class="tag-item" ng-bind-html="tag.text | highlight:todoSearch"></span>
+                            </div>
                         </div>
                     </div>
-                    <p class="muted">{{ minutes }} minute{{ minutesS }} and {{ seconds }} second{{ secondsS }} remaining before next Pomodoro.</p>
-                </timer>
-            </div>
+                </li>
+            </ul>
+            <!-- End of TODOs list -->
 
         </div>
-        <!-- End of Break panel -->
 
-        <!-- List of TODOs -->
-        <ul class="list-group">
-            <!-- Placeholder for new to-do -->
-            <li class="list-group-item todo-body" ng-if="todo.text.length > 0">
-                <div class="row">
-                    <div class="col-xs-12">
-                        <span class="done-{{todo.done}} lead">{{todo.text}}</span>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-8">
-                        <div class="tags-list">
-                            <!-- Tags within a single to-do -->
-                            <span ng-repeat="tag in todo.tags" class="tag-item">{{ tag.text }}</span>
-                        </div>
-                    </div>
-                    <div class="col-xs-4">
-                        <small class="pull-right text-muted">Created: NOW</small>
-                    </div>
-                </div>
-            </li>
-            <!-- End of placeholder -->
-            <!-- TODO: Should be a directive -->
-            <li ng-repeat="todo in todos | filter:todoSearch | orderBy:'!created' | showSelectedOnly:selectedTags"
-                ng-if="todo.deleted == false"
-                ng-class="{disabled: todo.done}"
-                class="list-group-item todo-body">
-                <div class="row">
-                    <div class="col-xs-8">
-                        <input type="checkbox" ng-model="todo.done"/>
-                        <a ng-href="#todo/{{ todo.id }}" style="color: inherit;">
-                            <span class="done-{{todo.done}} lead" ng-bind-html="todo.text | highlight:todoSearch"></span><br/>
-                        </a>
-                    </div>
-                    <div class="col-xs-4">
-                        <div class="btn-group pull-right">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-                                Action <span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li ng-click="pomodoro.startPomo(todo)"><a><span class="pointer">Start Pomo</span></a></li>
-                                <li class="divider"></li>
-                                <li ng-click="deleteTodo(todo)"><a><span class="pointer">Delete Todo</span></a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-6">
-                        <div class="tags-list">
-                            <!-- Tags within a single to-do -->
-                            <span ng-repeat="tag in todo.tags" class="tag-item">{{ tag.text }}</span>
-                        </div>
-                    </div>
-                </div>
-            </li>
-        </ul>
-        <!-- End of TODOs list -->
 
     </div>
-
-
-</div>
