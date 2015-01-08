@@ -10,6 +10,6 @@ api_manager.create_api(Tag, methods=['GET', 'POST', 'DELETE', 'PUT'])
 api_manager.create_api(Pomodoro, methods=['GET', 'POST', 'DELETE', 'PUT'])
 
 db.create_all()
-from app.routes import index
 if __name__ == '__main__':
+    from app.routes import index
     app.run(debug=True)

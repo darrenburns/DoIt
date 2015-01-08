@@ -1,9 +1,10 @@
 var module = angular.module('todolist');
 
-module.controller('TodoController', ['$scope', '$routeParams', 'Api',
-    function($scope, $routeParams, Api) {
+module.controller('TodoController', ['$scope', '$stateParams', 'Api',
+    function($scope, $stateParams, Api) {
 
-        $scope.todo = Api.Todo.get({id: $routeParams.todoId});
+
+        $scope.todo = Api.Todo.get({id: $stateParams.todoId});
 
         $scope.deleteTodo = function(todo) {
             todo.deleted = true;

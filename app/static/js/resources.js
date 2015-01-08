@@ -18,7 +18,8 @@ module.factory('Api', ['$resource',
             Pomodoro: $resource(BASE_API_URL + 'pomodoro/:id', {id: '@id'},
                 {
                     'query': {method: 'GET', isArray: false}
-                })
+                }
+            )
         }
 
 }]);

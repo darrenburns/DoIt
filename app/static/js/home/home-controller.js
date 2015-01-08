@@ -1,10 +1,15 @@
 angular.module('todolist')
     .controller('HomeController',
     ['$scope', 'TodoItem',
-        'TodoListService', 'TagService', 'Api', '$q', '$timeout',
-        function ($scope, TodoItem, TodoListService, TagService, Api, $q, $timeout) {
+        'TodoListService', 'TagService', 'Api', '$q', '$timeout', '$http', 'Account', '$auth',
+        function ($scope, TodoItem, TodoListService, TagService, Api, $q, $timeout, $http, Account, $auth) {
 
             $scope.todoSearch = '';
+            if ($auth.isAuthenticated()) {
+                Account.getProfile().success(function(data) {
+                    $scope.userProfile = data;
+                });
+            }
 
             $scope.allTags = [];
             Api.Tag.query(function(response) {
