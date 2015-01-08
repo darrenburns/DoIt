@@ -4,7 +4,7 @@ from app.models.user import User
 
 
 todo_tags_assoc = db.Table('todo_tags',
-                           db.Column('todo_id', db.Integer, db.ForeignKey('doit_v1.todo.id')),
+                           db.Column('todo_id', db.Integer, db.ForeignKey('todo.id')),
                            db.Column('tag_id', db.Integer, db.ForeignKey(Tag.id))
 )
 
@@ -12,7 +12,6 @@ todo_tags_assoc = db.Table('todo_tags',
 class Todo(db.Model):
 
     __tablename__ = 'todo'
-    __table_args__ = {"schema": "doit_v1"}
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))

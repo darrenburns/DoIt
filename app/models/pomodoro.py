@@ -5,7 +5,6 @@ from app.models.todo import Todo
 class Pomodoro(db.Model):
 
     __tablename__ = 'pomodoro'
-    __table_args__ = {"schema": "doit_v1"}
 
     id = db.Column(db.Integer, primary_key=True)
     time = db.Column(db.Integer, default=25 * 60)  # Time in seconds
