@@ -4,7 +4,10 @@ angular.module('todolist')
         'TodoListService', 'TagService', 'Api', '$q', '$timeout', '$http', 'Account', '$auth', '$stateParams',
         function ($scope, TodoItem, TodoListService, TagService, Api, $q, $timeout, $http, Account, $auth, $stateParams) {
 
+
             if ($auth.isAuthenticated()) {
+
+                $scope.todoSearch = '';
 
                 $scope.selectedTag = $stateParams.tag;
                 Account.getProfile().success(function(data) {
@@ -16,9 +19,22 @@ angular.module('todolist')
                         {name: "user_id", op: "==", val: $scope.user.id}
                     ];
 
+                    $scope.editor = {
+                        dpIsOpen: false,
+                        expanded: false,
+                        openDatePicker: function($event) {
+                            $event.preventDefault();
+                            $event.stopPropagation();
+                            this.dpIsOpen = true;
+                        }
+                    };
+                    $scope.editor.todo = new Api.Todo({user_id:$scope.user.id});  // The base to-do, ready for editing
+
                     if ($scope.selectedTag !== '') {
                         todoFilters.push({name: "tags__text", op: "any", val: $scope.selectedTag})
+                        $scope.editor.todo.tags = [$scope.selectedTag];
                     }
+
 
                     var todoOrderBy = [{"field": "created", "direction": "desc"}];
                     Api.Todo.query({"q": JSON.stringify({"filters": todoFilters, "order_by": todoOrderBy})}, function(response) {
@@ -28,42 +44,40 @@ angular.module('todolist')
                     var tagFilters = [{name: "user_id", op: "==", val: $scope.user.id}];
                     Api.Tag.query({"q": JSON.stringify({"filters": tagFilters})}, function(response) {
                         $scope.tags = response.objects;
-                        console.log($scope.tags);
                     });
 
 
-                    $scope.todo = new Api.Todo({user_id:$scope.user.id});  // The base to-do, ready for editing
-
                     $scope.addTodo = function() {
-                        $scope.todos.unshift($scope.todo);  // Update the scope to prevent having to re-query
-                        // TODO: Sometimes tags don't appear straight away (when multiple are added at once?)
-                        if ($scope.tags.length > 0) {
-                            // Replace the attempted newly created tag with the already existing tag
-                            for (var newTagIdx = 0; newTagIdx < $scope.todo.tags.length; newTagIdx++) {
-                                var newTag = $scope.todo.tags[newTagIdx];
-                                var found = false;
-                                $scope.todo.tags[newTagIdx].user = $scope.user;
-                                console.log($scope.todo.tags[newTagIdx], $scope.user.id);
-                                for (var oldTagIdx = 0; oldTagIdx < $scope.tags.length; oldTagIdx++) {
-                                    var oldTag = $scope.tags[oldTagIdx];
-                                    if (oldTag.text == newTag.text) {
-                                        found = true;
-                                        $scope.todo.tags[newTagIdx] = oldTag;
+                        if ($scope.editor.todo.text != '') {
+                            $scope.todos.unshift($scope.editor.todo);  // Update the scope to prevent having to re-query
+                            if ($scope.tags.length > 0) {
+                                // Replace the attempted newly created tag with the already existing tag
+                                for (var newTagIdx = 0; newTagIdx < $scope.editor.todo.tags.length; newTagIdx++) {
+                                    var newTag = $scope.editor.todo.tags[newTagIdx];
+                                    var found = false;
+                                    newTag.user = $scope.user;
+                                    for (var oldTagIdx = 0; oldTagIdx < $scope.tags.length; oldTagIdx++) {
+                                        var oldTag = $scope.tags[oldTagIdx];
+                                        if (oldTag.text == newTag.text) {
+                                            found = true;
+                                            $scope.editor.todo.tags[newTagIdx] = oldTag;
+                                        }
+                                    }
+
+                                    if (!found) {
+                                        $scope.tags.push(newTag);
                                     }
                                 }
-                                if (!found) {
-                                    $scope.tags.push(newTag);
-                                }
                             }
-
+                            // TODO: add angular form validation to make sure blank todos cant be submitted
+                            $scope.editor.todo.$save(function() {
+                                console.log('saved');
+                                $scope.editor.todo = new Api.Todo({user_id:$scope.user.id});  // Reset the to-do
+                            }, function() {
+                                console.log('error');
+                            });
                         }
-                        // TODO: add angular form validation to make sure blank todos cant be submitted
-                        $scope.todo.$save(function() {
-                            console.log('saved');
-                            $scope.todo = new Api.Todo({user_id:$scope.user.id});  // Reset the to-do
-                        }, function() {
-                            console.log('error');
-                        });
+
                     };
 
                     $scope.deleteTodo = function(todo) {
@@ -82,16 +96,12 @@ angular.module('todolist')
                                 todo.archived = true;
                                 Api.Todo.update(todo);
                                 //TODO: instantly remove this from the list of todos here instead of requeyrying? LOW PRIORITY
-                                Api.Todo.query({"q": JSON.stringify({"filters": filters, "order_by": orderBy})}, function(response) {
+                                Api.Todo.query({"q": JSON.stringify({"filters": todoFilters, "order_by": todoOrderBy})}, function(response) {
                                     $scope.todos = response.objects;
                                     // TODO: Stuff to handle todos marked as done properly
                                 });
                             }
                         });
-                    };
-
-                    $scope.filterTodos = function(tagText) {
-
                     };
 
                     var quotes = [
@@ -120,7 +130,7 @@ angular.module('todolist')
                             by: 'Og Mandino'
                         }
                     ];
-                    var randomQuote = function() {
+                    $scope.randomQuote = function() {
                         return quotes[Math.floor(Math.random() * quotes.length)];
                     };
                     $scope.currentQuote = '';
@@ -157,11 +167,11 @@ angular.module('todolist')
                         submitPomo: function() {
                             console.log('pomodoro has been submitted');
                             this.pomoState = 'break';
-                            $scope.currentQuote = randomQuote();
+                            $scope.currentQuote = $scope.randomQuote();
                             this.pomo.success = true;
                             this.pomo.$save(function() {
                                 // TODO: shouldn't have to query again here.
-                                Api.Todo.query({"q": JSON.stringify({"filters": filters, "order_by": orderBy})}, function(response) {
+                                Api.Todo.query({"q": JSON.stringify({"filters": todoFilters, "order_by": todoOrderBy})}, function(response) {
                                     $scope.todos = response.objects;
                                 });
                             });
