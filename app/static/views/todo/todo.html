@@ -1,12 +1,10 @@
 <div class="row">
     <div class="col-xs-8">
-        <h1 class="page-header">{{ todo.text }}<br/>
-
-            <span class="label label-primary label-large" ng-repeat="tag in todo.tags">{{ tag.text }}</span>
-            <span class="label label-success label-large" ng-if="todo.done">complete</span>
-            <span class="label label-danger label-large" ng-if="!todo.done">unfinished</span>
-            <span class="label label-default label-large" ng-if="todo.archived">archived</span>
-        </h1>
+        <h1 class="page-header doit-font">{{ todo.text }}</h1>
+        <span class="label label-primary label-large" ng-repeat="tag in todo.tags">{{ tag.text }}</span>
+        <span class="label label-success label-large" ng-if="todo.done">complete</span>
+        <span class="label label-danger label-large" ng-if="!todo.done">unfinished</span>
+        <span class="label label-default label-large" ng-if="todo.archived">archived</span>
     </div>
 
     <div class="col-xs-4">

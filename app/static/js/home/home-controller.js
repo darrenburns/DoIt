@@ -1,37 +1,58 @@
 angular.module('todolist')
     .controller('HomeController',
     ['$scope', 'TodoItem',
-        'TodoListService', 'TagService', 'Api', '$q', '$timeout', '$http', 'Account', '$auth',
-        function ($scope, TodoItem, TodoListService, TagService, Api, $q, $timeout, $http, Account, $auth) {
+        'TodoListService', 'TagService', 'Api', '$q', '$timeout', '$http', 'Account', '$auth', '$stateParams',
+        function ($scope, TodoItem, TodoListService, TagService, Api, $q, $timeout, $http, Account, $auth, $stateParams) {
 
             if ($auth.isAuthenticated()) {
 
-                $scope.todoSearch = '';
+                $scope.selectedTag = $stateParams.tag;
                 Account.getProfile().success(function(data) {
                     $scope.user = data;
-                    var filters = [{"name": "archived", "op": "==", "val": false},
-                        {"name": "done", "op": "==", "val": false},
-                        {"name": "deleted", "op": "==", "val": false},
-                        {"name": "user_id", "op": "==", "val": $scope.user.id}
+
+                    var todoFilters = [{name: "archived", op: "==", val: false},
+                        {name: "done", op: "==", val: false},
+                        {name: "deleted", op: "==", val: false},
+                        {name: "user_id", op: "==", val: $scope.user.id}
                     ];
-                    var orderBy = [{"field": "created", "direction": "desc"}];
-                    Api.Todo.query({"q": JSON.stringify({"filters": filters, "order_by": orderBy})}, function(response) {
+
+                    if ($scope.selectedTag !== '') {
+                        todoFilters.push({name: "tags__text", op: "any", val: $scope.selectedTag})
+                    }
+
+                    var todoOrderBy = [{"field": "created", "direction": "desc"}];
+                    Api.Todo.query({"q": JSON.stringify({"filters": todoFilters, "order_by": todoOrderBy})}, function(response) {
                         $scope.todos = response.objects;
                     });
+
+                    var tagFilters = [{name: "user_id", op: "==", val: $scope.user.id}];
+                    Api.Tag.query({"q": JSON.stringify({"filters": tagFilters})}, function(response) {
+                        $scope.tags = response.objects;
+                        console.log($scope.tags);
+                    });
+
+
                     $scope.todo = new Api.Todo({user_id:$scope.user.id});  // The base to-do, ready for editing
 
                     $scope.addTodo = function() {
                         $scope.todos.unshift($scope.todo);  // Update the scope to prevent having to re-query
                         // TODO: Sometimes tags don't appear straight away (when multiple are added at once?)
-                        if ($scope.allTags.length > 0) {
+                        if ($scope.tags.length > 0) {
                             // Replace the attempted newly created tag with the already existing tag
                             for (var newTagIdx = 0; newTagIdx < $scope.todo.tags.length; newTagIdx++) {
                                 var newTag = $scope.todo.tags[newTagIdx];
-                                for (var oldTagIdx = 0; oldTagIdx < $scope.allTags.length; oldTagIdx++) {
-                                    var oldTag = $scope.allTags[oldTagIdx];
+                                var found = false;
+                                $scope.todo.tags[newTagIdx].user = $scope.user;
+                                console.log($scope.todo.tags[newTagIdx], $scope.user.id);
+                                for (var oldTagIdx = 0; oldTagIdx < $scope.tags.length; oldTagIdx++) {
+                                    var oldTag = $scope.tags[oldTagIdx];
                                     if (oldTag.text == newTag.text) {
+                                        found = true;
                                         $scope.todo.tags[newTagIdx] = oldTag;
                                     }
+                                }
+                                if (!found) {
+                                    $scope.tags.push(newTag);
                                 }
                             }
 
@@ -67,6 +88,10 @@ angular.module('todolist')
                                 });
                             }
                         });
+                    };
+
+                    $scope.filterTodos = function(tagText) {
+
                     };
 
                     var quotes = [
@@ -155,16 +180,10 @@ angular.module('todolist')
 
                 });
 
-                Api.Tag.query(function(response) {
-                    $scope.allTags = response.objects;
-                    // TODO: Stuff to monitor selected tags
-                });
-
-
                 // Loads tags for the tag input field
                 $scope.loadTags = function(query) {
                     var deferred = $q.defer();
-                    var returnedTags = $scope.allTags;
+                    var returnedTags = $scope.tags;
                     returnedTags = returnedTags.filter(function(item) {
                         return item.text.indexOf(query) > -1;
                     });

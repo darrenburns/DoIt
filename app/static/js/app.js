@@ -18,7 +18,7 @@ angular.module('todolist', ['ngResource', 'ngAnimate', 'ngSanitize',
 
             $stateProvider
                 .state('home', {
-                    url: '/',
+                    url: '/home/:tag?',
                     templateUrl: 'views/home/home.html',
                     controller: 'HomeController',
                     resolve: {
@@ -52,7 +52,7 @@ angular.module('todolist', ['ngResource', 'ngAnimate', 'ngSanitize',
                     controller: 'LogoutController'
                 });
 
-            $urlRouterProvider.otherwise('/');
+            $urlRouterProvider.otherwise('/home/');
 
             $authProvider.google({
                 clientId: '158496852023-7gfibupmaqnjlk80uc805cd2og07fdog.apps.googleusercontent.com',

@@ -10,7 +10,8 @@ class User(db.Model):
     display_name = db.Column(db.String(64), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
     todos = db.relationship('Todo', backref='user', lazy='dynamic')
+    tags = db.relationship('Tag', backref='user', lazy='dynamic')
 
     def to_dict(self):
-        return dict(id=self.id, email=self.email, displayName=self.display_name,
+        return dict(id=self.id, email=self.email, display_name=self.display_name,
                     google=self.google)

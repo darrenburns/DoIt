@@ -87,6 +87,15 @@ body {
     cursor: pointer;
 }
 
+.doit-item {
+    font-family: 'Slabo 27px', serif;
+    font-size: 22px;
+}
+
+.doit-font {
+    font-family: 'Slabo 27px', serif;
+}
+
 .doit-controls-top {
     margin-top: 26px;
 }

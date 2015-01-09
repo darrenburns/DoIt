@@ -1,16 +1,18 @@
 var module = angular.module('todolist');
 
-module.controller('TodoController', ['$scope', '$stateParams', 'Api',
-    function($scope, $stateParams, Api) {
+/*
+Controller for the to-do screens
+ */
+module.controller('TodoController', ['$scope', '$stateParams', 'Api', 'Account',
+    function($scope, $stateParams, Api, Account) {
 
-
-        $scope.todo = Api.Todo.get({id: $stateParams.todoId});
-
-        $scope.deleteTodo = function(todo) {
-            todo.deleted = true;
-            todo.$save();
-        };
-
+        Account.getProfile().success(function(user) {
+            $scope.user = user;
+            Api.Todo.query({user_id:user.id} , function(todos) {
+                console.log(todos);
+            });
+            $scope.todo = Api.Todo.get({id: $stateParams.todoId})
+        });
 
 
 
