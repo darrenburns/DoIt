@@ -1,17 +1,23 @@
 angular.module('todolist')
     .controller('HomeController',
     ['$scope', 'TodoItem',
-        'TodoListService', 'TagService', 'Api', '$q', '$timeout', '$http', 'Account', '$auth', '$stateParams',
-        function ($scope, TodoItem, TodoListService, TagService, Api, $q, $timeout, $http, Account, $auth, $stateParams) {
+        'TodoListService', 'TagService', 'Api', '$q',
+        '$timeout', '$http', 'Account', '$auth', '$stateParams',
+        'LevelManager',
+        function ($scope, TodoItem, TodoListService, TagService, Api, $q,
+                  $timeout, $http, Account, $auth, $stateParams, LevelManager) {
 
 
             if ($auth.isAuthenticated()) {
 
                 $scope.todoSearch = '';
-
+                $scope.expanded = [];
                 $scope.selectedTag = $stateParams.tag;
                 Account.getProfile().success(function(data) {
                     $scope.user = data;
+                    $scope.userLevel = LevelManager.xpToLevel($scope.user.xp);
+                    $scope.userXpTilLevelUp = LevelManager.xpTilLevelUp($scope.user.xp);
+                    $scope.userLevelProgressPercent = 100 * LevelManager.getLevelProgress($scope.user.xp);
 
                     var todoFilters = [{name: "archived", op: "==", val: false},
                         {name: "done", op: "==", val: false},
@@ -21,7 +27,9 @@ angular.module('todolist')
 
                     $scope.editor = {
                         dpIsOpen: false,
-                        expanded: false,
+                        isExpanded: false,
+                        new: true,  // true when new task, false when editing old
+                        taskEditIndex: -1,  // the index in the array of the task being edited
                         openDatePicker: function($event) {
                             $event.preventDefault();
                             $event.stopPropagation();
@@ -44,18 +52,20 @@ angular.module('todolist')
                     var tagFilters = [{name: "user_id", op: "==", val: $scope.user.id}];
                     Api.Tag.query({"q": JSON.stringify({"filters": tagFilters})}, function(response) {
                         $scope.tags = response.objects;
-                    });
+                        console.log($scope.tags);
 
-
-                    $scope.addTodo = function() {
-                        if ($scope.editor.todo.text != '') {
-                            $scope.todos.unshift($scope.editor.todo);  // Update the scope to prevent having to re-query
-                            if ($scope.tags.length > 0) {
+                        $scope.addTodo = function($index) {
+                            if ($scope.editor.todo.text != '') {
+                                console.log('plz');
+                                $scope.todos.unshift($scope.editor.todo);  // Update the scope to prevent having to re-query
+                                console.log($scope.tags)
                                 // Replace the attempted newly created tag with the already existing tag
+                                console.log($scope.editor.todo.tags)
                                 for (var newTagIdx = 0; newTagIdx < $scope.editor.todo.tags.length; newTagIdx++) {
                                     var newTag = $scope.editor.todo.tags[newTagIdx];
                                     var found = false;
                                     newTag.user = $scope.user;
+                                    console.log('newtag', newTag)
                                     for (var oldTagIdx = 0; oldTagIdx < $scope.tags.length; oldTagIdx++) {
                                         var oldTag = $scope.tags[oldTagIdx];
                                         if (oldTag.text == newTag.text) {
@@ -63,21 +73,51 @@ angular.module('todolist')
                                             $scope.editor.todo.tags[newTagIdx] = oldTag;
                                         }
                                     }
-
+                                    console.log('asdas');
                                     if (!found) {
+                                        console.log('helloworld')
                                         $scope.tags.push(newTag);
                                     }
                                 }
-                            }
-                            // TODO: add angular form validation to make sure blank todos cant be submitted
-                            $scope.editor.todo.$save(function() {
-                                console.log('saved');
-                                $scope.editor.todo = new Api.Todo({user_id:$scope.user.id});  // Reset the to-do
-                            }, function() {
-                                console.log('error');
-                            });
-                        }
+                                // TODO: add angular form validation to make sure blank todos cant be submitted
+                                if ($scope.editor.new) {
+                                    $scope.editor.todo.$save(function() {
+                                        console.log('saved');
+                                    }, function() {
+                                        console.log('error');
+                                    });
+                                } else {
+                                    Api.Todo.update($scope.editor.todo, function() {
+                                        console.log('updated');
+                                        // Put the updated item back in the position it was previously
+                                        console.log($scope.editor.taskEditIndex, $scope.editor.todo);
+                                        $scope.todos.splice($scope.editor.taskEditIndex, 0, $scope.editor.todo);
+                                        $scope.editor.taskEditIndex = -1;
+                                        $scope.editor.new = true;
 
+                                    });
+                                }
+                                $scope.editor.todo = new Api.Todo({user_id:$scope.user.id});  // Reset the to-do
+
+                            }
+
+                        };
+                    });
+
+                    $scope.editTask = function(task, $index) {
+                        $scope.editor.todo = task;
+                        $scope.editor.isExpanded = task.due || task.note;
+                        $scope.editor.new = false;
+                        $scope.editor.taskEditIndex = $index;
+                        $scope.todos.splice($index, 1);
+                    };
+
+                    $scope.cancelEditTask = function() {
+                        $scope.editor.new = true;
+                        $scope.todos.splice($scope.editor.taskEditIndex, 0, $scope.editor.todo);
+                        $scope.editor.todo = new Api.Todo({user_id:$scope.user.id});
+                        $scope.editor.isExpanded = false;
+                        $scope.editor.taskEditIndex = -1;
                     };
 
                     $scope.deleteTodo = function(todo) {
@@ -183,6 +223,9 @@ angular.module('todolist')
                             this.pomoState = 'break-finished';
                             $scope.$apply();
                             console.log('break is finished!');
+                        },
+                        closeBreakPanel: function() {
+                            this.pomoState = 'off';
                         }
 
                     };

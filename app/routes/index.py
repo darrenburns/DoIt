@@ -47,13 +47,15 @@ def google():
     profile = json.loads(r.text)
 
     user = User.query.filter_by(google=profile['sub']).first()
+    print profile
     if user:
         token = create_token(user)
         return jsonify(token=token)
-    print profile
     u = User(google=profile['sub'],
              display_name=profile['name'],
-             email=profile['email'])
+             email=profile['email'],
+             picture=profile['picture']
+             )
     db.session.add(u)
     db.session.commit()
     token = create_token(u)
