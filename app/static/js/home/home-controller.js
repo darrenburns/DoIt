@@ -15,15 +15,18 @@ angular.module('todolist')
                 $scope.selectedTag = $stateParams.tag;
                 Account.getProfile().success(function(data) {
                     $scope.user = data;
-                    $scope.userLevel = LevelManager.xpToLevel($scope.user.xp);
-                    $scope.userXpTilLevelUp = LevelManager.xpTilLevelUp($scope.user.xp);
-                    $scope.userLevelProgressPercent = 100 * LevelManager.getLevelProgress($scope.user.xp);
+                    $scope.levelInfo = LevelManager.getLevelInfo($scope.user.xp);
 
                     var todoFilters = [{name: "archived", op: "==", val: false},
                         {name: "done", op: "==", val: false},
                         {name: "deleted", op: "==", val: false},
                         {name: "user_id", op: "==", val: $scope.user.id}
                     ];
+
+                    if ($scope.selectedTag !== '') {
+                        todoFilters.push({name: "tags__text", op: "any", val: $scope.selectedTag})
+                        $scope.editor.todo.tags = [$scope.selectedTag];
+                    }
 
                     $scope.editor = {
                         dpIsOpen: false,
@@ -37,12 +40,6 @@ angular.module('todolist')
                         }
                     };
                     $scope.editor.todo = new Api.Todo({user_id:$scope.user.id});  // The base to-do, ready for editing
-
-                    if ($scope.selectedTag !== '') {
-                        todoFilters.push({name: "tags__text", op: "any", val: $scope.selectedTag})
-                        $scope.editor.todo.tags = [$scope.selectedTag];
-                    }
-
 
                     var todoOrderBy = [{"field": "created", "direction": "desc"}];
                     Api.Todo.query({"q": JSON.stringify({"filters": todoFilters, "order_by": todoOrderBy})}, function(response) {
@@ -83,6 +80,9 @@ angular.module('todolist')
                                 if ($scope.editor.new) {
                                     $scope.editor.todo.$save(function() {
                                         console.log('saved');
+                                        $scope.user.xp += LevelManager.CREATE_TASK_XP;
+                                        Api.User.update($scope.user);
+                                        $scope.levelInfo = LevelManager.getLevelInfo($scope.user.xp);
                                     }, function() {
                                         console.log('error');
                                     });
@@ -123,7 +123,11 @@ angular.module('todolist')
                     $scope.deleteTodo = function(todo) {
                         $timeout(function() {
                             todo.deleted =  true;
-                            Api.Todo.delete(todo);
+                            Api.Todo.delete(todo, function() {
+                                $scope.user.xp += LevelManager.DELETE_TASK_XP;
+                                Api.User.update($scope.user);
+                                $scope.levelInfo = LevelManager.getLevelInfo($scope.user.xp);
+                            });
                         });
                         // TODO: delete floating tags (no references)
                     };
@@ -131,16 +135,24 @@ angular.module('todolist')
                     // When you archive a to-do, you remove it from the display.
                     // Done to-dos appear on screen but are crossed out
                     $scope.archiveTodos = function() {
+                        var xpReward = 0;
                         angular.forEach($scope.todos, function(todo) {
                             if (todo && todo.done) {
+                                console.log(todo.text);
+                                xpReward += LevelManager.ARCHIVE_TASK_XP;
                                 todo.archived = true;
                                 Api.Todo.update(todo);
-                                //TODO: instantly remove this from the list of todos here instead of requeyrying? LOW PRIORITY
-                                Api.Todo.query({"q": JSON.stringify({"filters": todoFilters, "order_by": todoOrderBy})}, function(response) {
-                                    $scope.todos = response.objects;
-                                    // TODO: Stuff to handle todos marked as done properly
-                                });
                             }
+                        });
+
+                        $scope.user.xp += xpReward;
+                        Api.User.update($scope.user);
+                        $scope.levelInfo = LevelManager.getLevelInfo($scope.user.xp);
+
+                        //TODO: Can avoid requery by tracking index here
+                        Api.Todo.query({"q": JSON.stringify({"filters": todoFilters, "order_by": todoOrderBy})}, function(response) {
+                            $scope.todos = response.objects;
+                            // TODO: Stuff to handle todos marked as done properly
                         });
                     };
 
@@ -243,12 +255,6 @@ angular.module('todolist')
                     deferred.resolve(returnedTags);
                     return deferred.promise;
                 };
-
-                $scope.selectedTags = TagService.getAllSelectedTags();
-
-                $scope.selectAllTags = TagService.selectAllTags;
-                $scope.deselectAllTags = TagService.deselectAllTags;
-                $scope.toggleSelectTag = TagService.toggleSelectTag;
 
             }
 

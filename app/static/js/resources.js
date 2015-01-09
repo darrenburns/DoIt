@@ -5,25 +5,26 @@ var BASE_API_URL = 'api/';
 module.factory('Api', ['$resource',
     function($resource) {
         return {
-            Todo: $resource(BASE_API_URL + 'todo/:id', {id: '@id'},
+            Todo: $resource(BASE_API_URL + 'todo/:id', {},
                 {
                     'query': {method: 'GET', isArray: false},
-                    'update': {method: 'PUT'}
+                    'update': {method: 'PUT', params: {id: '@id'}}
                 }
             ),
-            Tag: $resource(BASE_API_URL + 'tag/:id', {id: '@id'},
+            Tag: $resource(BASE_API_URL + 'tag/:id', {},
                 {
                     'query': {method: 'GET', isArray: false}
                 }
             ),
-            Pomodoro: $resource(BASE_API_URL + 'pomodoro/:id', {id: '@id'},
+            Pomodoro: $resource(BASE_API_URL + 'pomodoro/:id', {},
                 {
                     'query': {method: 'GET', isArray: false}
                 }
             ),
             User: $resource(BASE_API_URL + 'user/:id', {},
                 {
-                    'query': {method: 'GET', isArray: false}
+                    'query': {method: 'GET', isArray: false},
+                    'update': {method: 'PUT', params: {id: '@id'}}
                 }
             )
         }
