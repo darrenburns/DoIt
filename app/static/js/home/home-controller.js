@@ -10,12 +10,25 @@ angular.module('todolist')
 
             if ($auth.isAuthenticated()) {
 
+                $scope.editor = {
+                    dpIsOpen: false,
+                    isExpanded: false,
+                    new: true,  // true when new task, false when editing old
+                    taskEditIndex: -1,  // the index in the array of the task being edited
+                    openDatePicker: function($event) {
+                        $event.preventDefault();
+                        $event.stopPropagation();
+                        this.dpIsOpen = true;
+                    }
+                };
+
                 $scope.todoSearch = '';
                 $scope.expanded = [];
                 $scope.selectedTag = $stateParams.tag;
                 Account.getProfile().success(function(data) {
                     $scope.user = data;
                     $scope.levelInfo = LevelManager.getLevelInfo($scope.user.xp);
+                    $scope.editor.todo = new Api.Todo({user_id:$scope.user.id});  // The base to-do, ready for editing
 
                     var todoFilters = [{name: "archived", op: "==", val: false},
                         {name: "done", op: "==", val: false},
@@ -24,22 +37,9 @@ angular.module('todolist')
                     ];
 
                     if ($scope.selectedTag !== '') {
-                        todoFilters.push({name: "tags__text", op: "any", val: $scope.selectedTag})
+                        todoFilters.push({name: "tags__text", op: "any", val: $scope.selectedTag});
                         $scope.editor.todo.tags = [$scope.selectedTag];
                     }
-
-                    $scope.editor = {
-                        dpIsOpen: false,
-                        isExpanded: false,
-                        new: true,  // true when new task, false when editing old
-                        taskEditIndex: -1,  // the index in the array of the task being edited
-                        openDatePicker: function($event) {
-                            $event.preventDefault();
-                            $event.stopPropagation();
-                            this.dpIsOpen = true;
-                        }
-                    };
-                    $scope.editor.todo = new Api.Todo({user_id:$scope.user.id});  // The base to-do, ready for editing
 
                     var todoOrderBy = [{"field": "created", "direction": "desc"}];
                     Api.Todo.query({"q": JSON.stringify({"filters": todoFilters, "order_by": todoOrderBy})}, function(response) {
@@ -78,6 +78,7 @@ angular.module('todolist')
                                 }
                                 // TODO: add angular form validation to make sure blank todos cant be submitted
                                 if ($scope.editor.new) {
+                                    console.log($scope.editor.todo);
                                     $scope.editor.todo.$save(function() {
                                         console.log('saved');
                                         $scope.user.xp += LevelManager.CREATE_TASK_XP;
