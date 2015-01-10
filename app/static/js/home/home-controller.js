@@ -55,14 +55,11 @@ angular.module('todolist')
                             if ($scope.editor.todo.text != '') {
                                 console.log('plz');
                                 $scope.todos.unshift($scope.editor.todo);  // Update the scope to prevent having to re-query
-                                console.log($scope.tags)
                                 // Replace the attempted newly created tag with the already existing tag
-                                console.log($scope.editor.todo.tags)
                                 for (var newTagIdx = 0; newTagIdx < $scope.editor.todo.tags.length; newTagIdx++) {
                                     var newTag = $scope.editor.todo.tags[newTagIdx];
                                     var found = false;
                                     newTag.user = $scope.user;
-                                    console.log('newtag', newTag)
                                     for (var oldTagIdx = 0; oldTagIdx < $scope.tags.length; oldTagIdx++) {
                                         var oldTag = $scope.tags[oldTagIdx];
                                         if (oldTag.text == newTag.text) {
@@ -70,17 +67,13 @@ angular.module('todolist')
                                             $scope.editor.todo.tags[newTagIdx] = oldTag;
                                         }
                                     }
-                                    console.log('asdas');
                                     if (!found) {
-                                        console.log('helloworld')
                                         $scope.tags.push(newTag);
                                     }
                                 }
                                 // TODO: add angular form validation to make sure blank todos cant be submitted
                                 if ($scope.editor.new) {
-                                    console.log($scope.editor.todo);
                                     $scope.editor.todo.$save(function() {
-                                        console.log('saved');
                                         $scope.user.xp += LevelManager.CREATE_TASK_XP;
                                         Api.User.update($scope.user);
                                         $scope.levelInfo = LevelManager.getLevelInfo($scope.user.xp);
@@ -89,9 +82,7 @@ angular.module('todolist')
                                     });
                                 } else {
                                     Api.Todo.update($scope.editor.todo, function() {
-                                        console.log('updated');
                                         // Put the updated item back in the position it was previously
-                                        console.log($scope.editor.taskEditIndex, $scope.editor.todo);
                                         $scope.todos.splice($scope.editor.taskEditIndex, 0, $scope.editor.todo);
                                         $scope.editor.taskEditIndex = -1;
                                         $scope.editor.new = true;
@@ -99,7 +90,9 @@ angular.module('todolist')
                                     });
                                 }
                                 $scope.editor.todo = new Api.Todo({user_id:$scope.user.id});  // Reset the to-do
-
+                                if ($scope.selectedTag !== '') {
+                                    $scope.editor.todo.tags = [$scope.selectedTag]
+                                }
                             }
 
                         };
