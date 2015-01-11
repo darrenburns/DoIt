@@ -220,6 +220,10 @@ angular.module('todolist')
                                 Api.Todo.query({"q": JSON.stringify({"filters": todoFilters, "order_by": todoOrderBy})}, function(response) {
                                     $scope.todos = response.objects;
                                 });
+                                $scope.user.xp += LevelManager.SUBMIT_POMO_XP;
+                                Api.User.update($scope.user, function() {
+                                    $scope.levelInfo = LevelManager.getLevelInfo($scope.user.xp);
+                                });
                             });
                             this.pomo = new Api.Pomodoro();
                         },
